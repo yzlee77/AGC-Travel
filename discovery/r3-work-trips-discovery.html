@@ -54,6 +54,9 @@
   .navbtn:disabled{opacity:0;pointer-events:none}
   #prev{left:22px} #next{right:22px}
   .navbtn svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none}
+  .fsbtn{position:fixed;top:22px;right:22px;width:44px;height:44px;border-radius:50%;background:var(--card);border:1px solid var(--line);backdrop-filter:blur(12px);color:var(--ink-soft);z-index:9;display:grid;place-items:center;cursor:pointer;transition:background .2s,color .2s}
+  .fsbtn:hover{background:rgba(255,255,255,.1);color:var(--ink)}
+  .fsbtn svg{width:18px;height:18px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
   .dots{position:fixed;bottom:14px;left:0;right:0;display:flex;gap:9px;justify-content:center;z-index:9}
   .dots button{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.22);border:none;cursor:pointer;transition:background .2s,transform .2s}
   .dots button.on{background:var(--blue);transform:scale(1.5)}
@@ -97,10 +100,9 @@
   .flowstep .sn{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:rgba(94,158,255,.14);color:var(--blue);font-weight:700;font-size:15px}
   .flowstep .st{font-size:clamp(14.5px,1.6vw,16.5px);color:var(--ink);line-height:1.4;text-align:left}
   .flowstep .st i{color:var(--ink-faint);font-style:normal}
-  .imglink{display:block;margin:24px auto 0;padding:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;cursor:pointer;max-width:min(420px,90vw);font-family:inherit}
-  .imglink:hover{border-color:var(--ink-soft)}
-  .imglink img{display:block;width:100%;height:auto}
-  .imglink .imgcap{display:block;padding:9px 14px;font-size:12px;color:var(--ink-soft);background:rgba(255,255,255,.04);border-top:1px solid var(--line);text-align:left}
+  .imgtoggle{display:inline-flex;align-items:center;gap:10px;margin:28px auto 0;padding:12px 22px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.05);color:var(--ink-soft);cursor:pointer;font-family:inherit;font-size:13.5px;font-weight:600;transition:background .15s,color .15s,border-color .15s}
+  .imgtoggle:hover{background:rgba(255,255,255,.1);color:var(--ink);border-color:var(--ink-soft)}
+  .imgtoggle svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 
   .lightbox{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:clamp(16px,4vw,48px);opacity:0;pointer-events:none;transition:opacity .3s var(--ease)}
   .lightbox[aria-hidden="false"]{opacity:1;pointer-events:auto}
@@ -203,9 +205,9 @@
       <div class="glass flowstep"><span class="sn">5</span><span class="st">Div FBP prepares and submits the Travel Approval Paper (TAP)</span></div>
       <div class="glass flowstep"><span class="sn">6</span><span class="st">FCM performs soft booking, then hard booking once approved</span></div>
     </div>
-    <button class="imglink r" id="flowImgBtn" style="--d:.3s">
-      <img src="travel-as-is-flow.png" alt="As Is Process Flow (Work Trips) diagram" />
-      <span class="imgcap">As Is Process Flow (Work Trips) &middot; click to enlarge</span>
+    <button class="imgtoggle r" id="flowImgBtn" style="--d:.3s">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 15l5-5 4 4 4-4 5 5"/><circle cx="8" cy="9" r="1.4" fill="currentColor" stroke="none"/></svg>
+      View As-Is Process Flow diagram
     </button>
   </section>
 
@@ -337,6 +339,10 @@
 
 <button class="navbtn" id="prev" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
 <button class="navbtn" id="next" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+<button class="fsbtn" id="fsToggle" aria-label="Toggle fullscreen">
+  <svg viewBox="0 0 24 24" id="fsIconExpand"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/></svg>
+  <svg viewBox="0 0 24 24" id="fsIconCollapse" hidden><path d="M9 3v3a2 2 0 0 1-2 2H4M20 9h-3a2 2 0 0 1-2-2V4M15 20v-3a2 2 0 0 1 2-2h3M4 15h3a2 2 0 0 1 2 2v3"/></svg>
+</button>
 <div class="dots" id="dots"></div>
 <div class="hint r" id="hint" style="--d:.4s">Use <kbd>&larr;</kbd> <kbd>&rarr;</kbd> or swipe &middot; click a step for detail</div>
 
@@ -758,6 +764,35 @@
   const deckEl3=document.getElementById('deck');
   deckEl3.addEventListener('touchstart', e=>{ if(lightboxOpen) e.stopPropagation(); }, true);
   deckEl3.addEventListener('touchend', e=>{ if(lightboxOpen) e.stopPropagation(); }, true);
+})();
+
+// --- Fullscreen toggle for the whole deck ---
+(function(){
+  const btn=document.getElementById('fsToggle');
+  const iconExpand=document.getElementById('fsIconExpand');
+  const iconCollapse=document.getElementById('fsIconCollapse');
+  if(!btn)return;
+
+  function updateIcon(){
+    const isFs=!!document.fullscreenElement;
+    iconExpand.hidden=isFs;
+    iconCollapse.hidden=!isFs;
+  }
+
+  btn.addEventListener('click', ()=>{
+    try{
+      if(!document.fullscreenElement){
+        const req=document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+        if(req && req.catch) req.catch(()=>{ /* fullscreen not permitted in this context, ignore */ });
+      } else {
+        const ext=document.exitFullscreen && document.exitFullscreen();
+        if(ext && ext.catch) ext.catch(()=>{});
+      }
+    }catch(e){ /* Fullscreen API unavailable — button is a no-op */ }
+  });
+
+  document.addEventListener('fullscreenchange', updateIcon);
+  updateIcon();
 })();
 </script>
 </body>
