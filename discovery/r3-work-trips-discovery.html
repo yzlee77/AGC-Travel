@@ -97,6 +97,18 @@
   .flowstep .sn{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:rgba(94,158,255,.14);color:var(--blue);font-weight:700;font-size:15px}
   .flowstep .st{font-size:clamp(14.5px,1.6vw,16.5px);color:var(--ink);line-height:1.4;text-align:left}
   .flowstep .st i{color:var(--ink-faint);font-style:normal}
+  .imglink{display:block;margin:24px auto 0;padding:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;cursor:pointer;max-width:min(420px,90vw);font-family:inherit}
+  .imglink:hover{border-color:var(--ink-soft)}
+  .imglink img{display:block;width:100%;height:auto}
+  .imglink .imgcap{display:block;padding:9px 14px;font-size:12px;color:var(--ink-soft);background:rgba(255,255,255,.04);border-top:1px solid var(--line);text-align:left}
+
+  .lightbox{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:clamp(16px,4vw,48px);opacity:0;pointer-events:none;transition:opacity .3s var(--ease)}
+  .lightbox[aria-hidden="false"]{opacity:1;pointer-events:auto}
+  .lightbox .scrim{position:absolute;inset:0;background:rgba(0,0,0,.88)}
+  .lightbox img{position:relative;max-width:100%;max-height:100%;border-radius:10px;box-shadow:0 30px 90px rgba(0,0,0,.6);transform:scale(.97);transition:transform .3s var(--ease)}
+  .lightbox[aria-hidden="false"] img{transform:none}
+  .lbclose{position:fixed;top:22px;right:22px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid var(--line);color:var(--ink);display:grid;place-items:center;cursor:pointer;z-index:2;font-size:18px}
+  .lbclose:hover{background:rgba(255,255,255,.16)}
 
   /* A/B/C column breakdown */
   .cols{display:flex;gap:clamp(14px,2vw,22px);justify-content:center;margin-top:36px;max-width:1120px;width:100%;flex-wrap:wrap}
@@ -182,6 +194,10 @@
       <div class="glass flowstep"><span class="sn">5</span><span class="st">Div FBP prepares and submits the Travel Approval Paper (TAP)</span></div>
       <div class="glass flowstep"><span class="sn">6</span><span class="st">FCM performs soft booking, then hard booking once approved</span></div>
     </div>
+    <button class="imglink r" id="flowImgBtn" style="--d:.3s">
+      <img src="travel-as-is-flow.png" alt="As Is Process Flow (Work Trips) diagram" />
+      <span class="imgcap">As Is Process Flow (Work Trips) &middot; click to enlarge</span>
+    </button>
   </section>
 
   <section class="slide">
@@ -227,6 +243,12 @@
     </div>
     <button class="dback" id="fback">Close</button>
   </div>
+</div>
+
+<div class="lightbox" id="imgLightbox" aria-hidden="true">
+  <div class="scrim" id="lbScrim"></div>
+  <button class="lbclose" id="lbClose" aria-label="Close">&times;</button>
+  <img src="travel-as-is-flow.png" alt="As Is Process Flow (Work Trips) diagram, enlarged" />
 </div>
 
 <div class="detail" id="personaModal" aria-hidden="true">
@@ -673,6 +695,33 @@
   deckEl2.addEventListener('touchend', e=>{ if(nodeModalOpen) e.stopPropagation(); }, true);
 
   renderAll();
+})();
+
+// --- Fullscreen lightbox for the As-Is flow diagram image ---
+(function(){
+  const btn=document.getElementById('flowImgBtn');
+  const box=document.getElementById('imgLightbox');
+  const scrim=document.getElementById('lbScrim');
+  const closeBtn=document.getElementById('lbClose');
+  if(!btn||!box)return;
+  let lightboxOpen=false;
+
+  function open(){ lightboxOpen=true; box.setAttribute('aria-hidden','false'); closeBtn.focus(); }
+  function close(){ lightboxOpen=false; box.setAttribute('aria-hidden','true'); }
+
+  btn.addEventListener('click', open);
+  closeBtn.addEventListener('click', close);
+  scrim.addEventListener('click', close);
+
+  window.addEventListener('keydown', e=>{
+    if(!lightboxOpen)return;
+    if(e.key==='Escape'){ e.preventDefault(); close(); }
+    else if(e.key.indexOf('Arrow')===0 || e.key===' '){ e.preventDefault(); }
+    e.stopPropagation();
+  }, true);
+  const deckEl3=document.getElementById('deck');
+  deckEl3.addEventListener('touchstart', e=>{ if(lightboxOpen) e.stopPropagation(); }, true);
+  deckEl3.addEventListener('touchend', e=>{ if(lightboxOpen) e.stopPropagation(); }, true);
 })();
 </script>
 </body>
