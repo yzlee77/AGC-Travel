@@ -1,0 +1,675 @@
+<title>Travel Release Timeline</title>
+<style>
+  :root{
+    --bg:#f7f6f2; --surface:#ffffff;
+    --ink:#14201f; --ink-soft:#5c665f; --muted:#8b9089;
+    --line:#e3e1d8;
+    --done:#14201f; --done-tint:#eceae3;
+    --accent:#2457c9; --accent-tint:#e3ecfc;
+    --idle-line:#c7c5ba; --idle-text:#8b9089;
+    --risk-text:#8a5a00; --risk-bg:#fdf0d4;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0f1513; --surface:#182420;
+      --ink:#eceae3; --ink-soft:#a9b0a8; --muted:#7d857e;
+      --line:#2b332f;
+      --done:#eceae3; --done-tint:#232d29;
+      --accent:#6f9bf0; --accent-tint:#1c2a3f;
+      --idle-line:#3a423d; --idle-text:#7d857e;
+      --risk-text:#e0b04a; --risk-bg:#3a2c10;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0f1513; --surface:#182420;
+    --ink:#eceae3; --ink-soft:#a9b0a8; --muted:#7d857e;
+    --line:#2b332f;
+    --done:#eceae3; --done-tint:#232d29;
+    --accent:#6f9bf0; --accent-tint:#1c2a3f;
+    --idle-line:#3a423d; --idle-text:#7d857e;
+    --risk-text:#e0b04a; --risk-bg:#3a2c10;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    padding:44px 56px; max-width:1200px; margin-inline:auto;
+  }
+  .eyebrow{font-size:.78rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+  h1{font-size:1.7rem; font-weight:700; margin:6px 0 4px; text-wrap:balance;}
+  .subtitle{color:var(--ink-soft); font-size:1rem;}
+  .subtitle b{color:var(--accent); font-weight:700;}
+
+  .card{
+    background:var(--surface); border-radius:20px; padding:56px 48px 40px;
+    margin-block-start:36px;
+  }
+
+  .row{display:flex; align-items:stretch;}
+  .row + .row{margin-block-start:14px;}
+  .col{flex:0 0 auto; position:relative;}
+  .col-r1{flex-basis:110px;}
+  .col-sprint{flex:14 1 0%;}
+  .col-r3{flex:84 1 0%;}
+  .col-r4{flex-basis:130px;}
+  .gap{flex:0 0 12px;}
+
+  /* the bar */
+  .bar{height:14px; border-radius:7px; position:relative;}
+  .bar.done{background:var(--done);}
+  .bar.current{background:var(--accent);}
+  .bar.future{background:transparent; border:2px dashed var(--idle-line); height:10px; margin-block:2px;}
+
+  /* today marker sits above the bar row */
+  .marker-row{position:relative; height:34px;}
+  .today{
+    position:absolute; top:0; left:50%; transform:translateX(-50%);
+    display:flex; flex-direction:column; align-items:center; gap:5px;
+  }
+  .today .label{
+    background:var(--accent); color:var(--surface); font-weight:700; font-size:.72rem;
+    letter-spacing:.06em; padding:4px 10px; border-radius:6px; white-space:nowrap;
+  }
+  .today .tick{width:2px; height:12px; background:var(--accent);}
+
+  /* labels below the bar */
+  .cap-label{text-align:center;}
+  .cap-label .name{font-weight:700; font-size:.92rem;}
+  .cap-label .meta{font-size:.78rem; color:var(--ink-soft); margin-block-start:2px;}
+  .col-r1 .name{color:var(--done);}
+  .col-r4 .name, .col-r3 .name{color:var(--idle-text);}
+  .col-sprint .name{color:var(--accent);}
+
+  .legend{display:flex; flex-wrap:wrap; gap:22px; margin-block-start:38px;}
+  .legend-item{display:flex; align-items:center; gap:8px; font-size:.82rem; color:var(--ink-soft);}
+  .swatch{width:20px; height:8px; border-radius:4px; flex-shrink:0;}
+  .swatch.future{background:transparent; border:2px dashed var(--idle-line); height:4px;}
+
+  footer{margin-block-start:20px; color:var(--muted); font-size:.8rem; line-height:1.6; max-width:80ch;}
+
+  .accordion{
+    background:var(--surface); border-radius:20px; margin-block-start:16px;
+    overflow:hidden;
+  }
+  .accordion-header{
+    display:flex; align-items:center; gap:12px; width:100%;
+    padding:20px 32px; border:none; background:none; cursor:pointer;
+    font-family:inherit; text-align:left;
+  }
+  .accordion-header .chevron{
+    width:10px; height:10px; border-right:2px solid var(--ink-soft); border-bottom:2px solid var(--ink-soft);
+    transform:rotate(-45deg); transition:transform .15s ease; flex-shrink:0;
+  }
+  .accordion[data-open="true"] .chevron{transform:rotate(45deg);}
+  .accordion-header .title{font-weight:700; font-size:1rem; flex:1;}
+  .accordion-header .title .tag{color:var(--accent); font-weight:700;}
+
+  .accordion-body{padding:0 32px 28px;}
+  .accordion[data-open="false"] .accordion-body{display:none;}
+
+  .focus-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px;}
+  .focus-list li{
+    display:flex; align-items:flex-start; gap:10px; font-size:.92rem; line-height:1.5;
+  }
+  .focus-list li::before{
+    content:""; width:6px; height:6px; border-radius:50%; background:var(--accent);
+    margin-block-start:8px; flex-shrink:0;
+  }
+  .focus-empty{color:var(--muted); font-size:.9rem; font-style:italic;}
+
+  .focus-edit textarea{
+    width:100%; min-height:140px; resize:vertical; font-family:inherit; font-size:.92rem;
+    color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:10px;
+    padding:12px 14px; line-height:1.6;
+  }
+  .focus-actions{display:flex; gap:10px; margin-block-start:12px;}
+  .btn{
+    font-family:inherit; font-size:.85rem; font-weight:600; padding:8px 16px;
+    border-radius:8px; border:1px solid var(--line); background:var(--surface); color:var(--ink);
+    cursor:pointer;
+  }
+  .btn.primary{background:var(--accent); border-color:var(--accent); color:#fff;}
+  .edit-toggle{
+    font-family:inherit; font-size:.82rem; font-weight:600; color:var(--accent);
+    background:none; border:none; cursor:pointer; padding:4px 8px; flex-shrink:0;
+  }
+
+  .tabs{display:flex; gap:8px; margin-block-start:28px;}
+  .tab-btn{
+    font-family:inherit; font-size:.88rem; font-weight:600; padding:10px 20px;
+    border-radius:10px; border:1px solid var(--line); background:var(--surface); color:var(--ink-soft);
+    cursor:pointer;
+  }
+  .tab-btn.active{background:var(--ink); border-color:var(--ink); color:var(--bg);}
+
+  .r3-intro{
+    background:var(--accent-tint); border-radius:14px; padding:16px 22px;
+    font-size:.88rem; color:var(--ink-soft); line-height:1.55; margin-block:24px 20px;
+  }
+  .r3-intro b{color:var(--ink); font-weight:700;}
+
+  .sprint-card{
+    background:var(--surface); border-radius:16px; padding:22px 26px;
+    margin-block-start:12px;
+  }
+  .sprint-card-head{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;}
+  .sprint-card-head .sname{font-weight:700; font-size:1.02rem;}
+  .sprint-card-head .sdates{font-size:.8rem; color:var(--muted); font-family: ui-monospace, Consolas, monospace;}
+  .sprint-card-head .edit-toggle{margin-inline-start:auto;}
+  .risk-tag{
+    display:inline-flex; align-items:center; gap:5px; font-size:.72rem; font-weight:600;
+    color:var(--risk-text); background:var(--risk-bg); padding:3px 9px; border-radius:6px; margin-block-start:8px;
+  }
+  .sprint-body{margin-block-start:12px;}
+</style>
+
+<p class="eyebrow">AGC &middot; Travel Track</p>
+<h1>Release Timeline</h1>
+<p class="subtitle">Currently <b>R2 &middot; Sprint 15 of 16</b> &nbsp;&middot;&nbsp; week of 22 September 2026</p>
+
+<div class="tabs">
+  <button class="tab-btn active" id="tabBtnOverview">Overview</button>
+  <button class="tab-btn" id="tabBtnR3">R3 Sprint Plan</button>
+  <button class="tab-btn" id="tabBtnScope">R3 Scope</button>
+</div>
+
+<section id="tabOverview">
+
+<div class="card">
+
+  <div class="row marker-row">
+    <div class="col col-r1"></div>
+    <div class="gap"></div>
+    <div class="col col-sprint">
+      <div class="today">
+        <span class="label">TODAY</span>
+        <span class="tick"></span>
+      </div>
+    </div>
+    <div class="gap"></div>
+    <div class="col col-sprint"></div>
+    <div class="gap"></div>
+    <div class="col col-r3"></div>
+    <div class="gap"></div>
+    <div class="col col-r4"></div>
+  </div>
+
+  <div class="row">
+    <div class="col col-r1"><div class="bar done"></div></div>
+    <div class="gap"></div>
+    <div class="col col-sprint"><div class="bar current"></div></div>
+    <div class="gap"></div>
+    <div class="col col-sprint"><div class="bar current"></div></div>
+    <div class="gap"></div>
+    <div class="col col-r3"><div class="bar future"></div></div>
+    <div class="gap"></div>
+    <div class="col col-r4"><div class="bar future"></div></div>
+  </div>
+
+  <div class="row" style="margin-block-start:18px;">
+    <div class="col col-r1">
+      <div class="cap-label"><div class="name">R1</div><div class="meta">Live</div></div>
+    </div>
+    <div class="gap"></div>
+    <div class="col col-sprint">
+      <div class="cap-label"><div class="name">Sprint 15</div><div class="meta">21 Sep&ndash;4 Oct</div></div>
+    </div>
+    <div class="gap"></div>
+    <div class="col col-sprint">
+      <div class="cap-label"><div class="name">Sprint 16 &middot; UAT</div><div class="meta">5&ndash;18 Oct &rarr; Go-Live 19 Oct</div></div>
+    </div>
+    <div class="gap"></div>
+    <div class="col col-r3">
+      <div class="cap-label"><div class="name">R3 &middot; Work Trips</div><div class="meta">~6 sprints &middot; est. Go-Live ~11 Jan 2027</div></div>
+    </div>
+    <div class="gap"></div>
+    <div class="col col-r4">
+      <div class="cap-label"><div class="name">R4</div><div class="meta">Dates TBD</div></div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span class="legend-item"><span class="swatch" style="background:var(--done);"></span>Completed</span>
+    <span class="legend-item"><span class="swatch" style="background:var(--accent);"></span>Current release</span>
+    <span class="legend-item"><span class="swatch future"></span>Planned / estimated</span>
+  </div>
+
+</div>
+
+<div class="accordion" id="focusAccordion" data-open="false">
+  <button class="accordion-header" id="focusToggle">
+    <span class="chevron"></span>
+    <span class="title">Current Sprint Focus &nbsp;<span class="tag">Sprint 15</span></span>
+    <span class="edit-toggle" id="editToggle">Edit</span>
+  </button>
+  <div class="accordion-body">
+    <div id="focusView"></div>
+    <div id="focusEdit" class="focus-edit" hidden>
+      <textarea id="focusTextarea" placeholder="One item per line, e.g.&#10;Complete FCM quotation parser testing&#10;Finalise TAP field validation rules&#10;UAT script walkthrough with FBP"></textarea>
+      <div class="focus-actions">
+        <button class="btn primary" id="focusSave">Save</button>
+        <button class="btn" id="focusCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Bar widths are proportional to duration for R2's two sprints and the R3 estimate (14 / 14 / 84 days); R1 and R4 use fixed widths since they have no precise span to scale against. Update the TODAY marker, current-sprint labels, and the Current Sprint Focus list each week, then screenshot the page into the deck. Focus items are saved in this browser only (not shared/synced) — click Edit to update.
+</footer>
+
+</section>
+
+<section id="tabR3" hidden>
+
+  <div class="r3-intro">
+    <b>Rough draft, not a commitment.</b> Work Trip discovery is happening progressively, sprint by sprint, not upfront — so this breakdown reflects current understanding and will change as discovery proceeds. Each sprint's content below is editable directly on this page.
+  </div>
+
+  <div id="sprintCards"></div>
+
+</section>
+
+<section id="tabScope" hidden>
+
+  <div class="r3-intro">
+    <b>Current understanding, not final scope.</b> This reflects what we know as of now and will be refined as Work Trip discovery continues. Every section below is editable directly on this page.
+  </div>
+
+  <div class="sprint-card">
+    <div class="sprint-card-head">
+      <span class="sname">Objective</span>
+      <span class="edit-toggle" data-role="edit">Edit</span>
+    </div>
+    <div class="sprint-body" id="scopeObjective"></div>
+  </div>
+
+  <div class="sprint-card">
+    <div class="sprint-card-head">
+      <span class="sname">Start Point</span>
+      <span class="edit-toggle" data-role="edit">Edit</span>
+    </div>
+    <div class="sprint-body" id="scopeStart"></div>
+  </div>
+
+  <div class="sprint-card">
+    <div class="sprint-card-head">
+      <span class="sname">End Point</span>
+      <span class="edit-toggle" data-role="edit">Edit</span>
+    </div>
+    <div class="sprint-body" id="scopeEnd"></div>
+  </div>
+
+  <div class="sprint-card">
+    <div class="sprint-card-head">
+      <span class="sname">Personas Involved</span>
+      <span class="edit-toggle" data-role="edit">Edit</span>
+    </div>
+    <div class="sprint-body" id="scopePersonas"></div>
+  </div>
+
+  <div class="sprint-card">
+    <div class="sprint-card-head">
+      <span class="sname">Open Questions</span>
+      <span class="edit-toggle" data-role="edit">Edit</span>
+    </div>
+    <div class="sprint-body" id="scopeQuestions"></div>
+  </div>
+
+</section>
+
+<script>
+(function(){
+  var STORAGE_KEY = "agc-travel-sprint-focus-items";
+  var OPEN_KEY = "agc-travel-sprint-focus-open";
+
+  var accordion = document.getElementById("focusAccordion");
+  var toggleBtn = document.getElementById("focusToggle");
+  var editToggle = document.getElementById("editToggle");
+  var viewEl = document.getElementById("focusView");
+  var editEl = document.getElementById("focusEdit");
+  var textarea = document.getElementById("focusTextarea");
+  var saveBtn = document.getElementById("focusSave");
+  var cancelBtn = document.getElementById("focusCancel");
+
+  function loadItems(){
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [];
+      var parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch(e) { return []; }
+  }
+  function saveItems(items){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); } catch(e) {}
+  }
+  function loadOpen(){
+    try { return localStorage.getItem(OPEN_KEY) === "true"; } catch(e) { return false; }
+  }
+  function saveOpen(isOpen){
+    try { localStorage.setItem(OPEN_KEY, isOpen ? "true" : "false"); } catch(e) {}
+  }
+
+  function renderView(){
+    var items = loadItems();
+    viewEl.innerHTML = "";
+    editEl.hidden = true;
+    if (items.length === 0) {
+      var p = document.createElement("p");
+      p.className = "focus-empty";
+      p.textContent = "No items added yet — click Edit to list what the team is working on this sprint.";
+      viewEl.appendChild(p);
+      viewEl.hidden = false;
+      return;
+    }
+    var ul = document.createElement("ul");
+    ul.className = "focus-list";
+    items.forEach(function(item){
+      var li = document.createElement("li");
+      li.textContent = item;
+      ul.appendChild(li);
+    });
+    viewEl.appendChild(ul);
+    viewEl.hidden = false;
+  }
+
+  function openEdit(){
+    var items = loadItems();
+    textarea.value = items.join("\n");
+    viewEl.hidden = true;
+    editEl.hidden = false;
+    if (accordion.getAttribute("data-open") === "false") {
+      accordion.setAttribute("data-open", "true");
+      saveOpen(true);
+    }
+    textarea.focus();
+  }
+
+  editToggle.addEventListener("click", function(e){
+    e.stopPropagation();
+    openEdit();
+  });
+
+  saveBtn.addEventListener("click", function(){
+    var lines = textarea.value.split("\n").map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 0; });
+    saveItems(lines);
+    renderView();
+  });
+
+  cancelBtn.addEventListener("click", function(){
+    renderView();
+  });
+
+  toggleBtn.addEventListener("click", function(){
+    var isOpen = accordion.getAttribute("data-open") === "true";
+    accordion.setAttribute("data-open", isOpen ? "false" : "true");
+    saveOpen(!isOpen);
+  });
+
+  accordion.setAttribute("data-open", loadOpen() ? "true" : "false");
+  renderView();
+})();
+
+// --- Tab switching ---
+(function(){
+  var TAB_KEY = "agc-travel-active-tab";
+  var btnOverview = document.getElementById("tabBtnOverview");
+  var btnR3 = document.getElementById("tabBtnR3");
+  var btnScope = document.getElementById("tabBtnScope");
+  var secOverview = document.getElementById("tabOverview");
+  var secR3 = document.getElementById("tabR3");
+  var secScope = document.getElementById("tabScope");
+
+  function showTab(tab){
+    secOverview.hidden = tab !== "overview";
+    secR3.hidden = tab !== "r3";
+    secScope.hidden = tab !== "scope";
+    btnOverview.classList.toggle("active", tab === "overview");
+    btnR3.classList.toggle("active", tab === "r3");
+    btnScope.classList.toggle("active", tab === "scope");
+    try { localStorage.setItem(TAB_KEY, tab); } catch(e){}
+  }
+
+  btnOverview.addEventListener("click", function(){ showTab("overview"); });
+  btnR3.addEventListener("click", function(){ showTab("r3"); });
+  btnScope.addEventListener("click", function(){ showTab("scope"); });
+
+  var saved = "overview";
+  try { saved = localStorage.getItem(TAB_KEY) || "overview"; } catch(e){}
+  showTab(saved);
+})();
+
+// --- R3 Scope tab (editable text/list cards) ---
+(function(){
+  function makeEditableText(containerId, storageKey, defaultText, editBtn){
+    var container = document.getElementById(containerId);
+    var viewEl = document.createElement("div");
+    var editEl = document.createElement("div");
+    editEl.className = "focus-edit"; editEl.hidden = true;
+    var ta = document.createElement("textarea");
+    ta.style.minHeight = "90px";
+    var actions = document.createElement("div"); actions.className = "focus-actions";
+    var saveBtn = document.createElement("button"); saveBtn.className = "btn primary"; saveBtn.textContent = "Save";
+    var cancelBtn = document.createElement("button"); cancelBtn.className = "btn"; cancelBtn.textContent = "Cancel";
+    actions.appendChild(saveBtn); actions.appendChild(cancelBtn);
+    editEl.appendChild(ta); editEl.appendChild(actions);
+    container.appendChild(viewEl); container.appendChild(editEl);
+
+    function load(){
+      try { return localStorage.getItem(storageKey) || defaultText; } catch(e){ return defaultText; }
+    }
+    function save(text){
+      try { localStorage.setItem(storageKey, text); } catch(e){}
+    }
+    function render(){
+      var p = document.createElement("p");
+      p.style.margin = "0"; p.style.lineHeight = "1.6"; p.style.fontSize = ".92rem";
+      p.textContent = load();
+      viewEl.innerHTML = ""; viewEl.appendChild(p);
+      viewEl.hidden = false; editEl.hidden = true;
+    }
+    editBtn.addEventListener("click", function(){
+      ta.value = load(); viewEl.hidden = true; editEl.hidden = false; ta.focus();
+    });
+    saveBtn.addEventListener("click", function(){ save(ta.value.trim()); render(); });
+    cancelBtn.addEventListener("click", render);
+    render();
+  }
+
+  function makeEditableList(containerId, storageKey, defaultItems, editBtn){
+    var container = document.getElementById(containerId);
+    var viewEl = document.createElement("div");
+    var editEl = document.createElement("div");
+    editEl.className = "focus-edit"; editEl.hidden = true;
+    var ta = document.createElement("textarea");
+    ta.placeholder = "One item per line";
+    var actions = document.createElement("div"); actions.className = "focus-actions";
+    var saveBtn = document.createElement("button"); saveBtn.className = "btn primary"; saveBtn.textContent = "Save";
+    var cancelBtn = document.createElement("button"); cancelBtn.className = "btn"; cancelBtn.textContent = "Cancel";
+    actions.appendChild(saveBtn); actions.appendChild(cancelBtn);
+    editEl.appendChild(ta); editEl.appendChild(actions);
+    container.appendChild(viewEl); container.appendChild(editEl);
+
+    function load(){
+      try {
+        var raw = localStorage.getItem(storageKey);
+        if (!raw) return defaultItems.slice();
+        var parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : defaultItems.slice();
+      } catch(e) { return defaultItems.slice(); }
+    }
+    function save(items){
+      try { localStorage.setItem(storageKey, JSON.stringify(items)); } catch(e){}
+    }
+    function render(){
+      var items = load();
+      var ul = document.createElement("ul"); ul.className = "focus-list";
+      items.forEach(function(item){
+        var li = document.createElement("li"); li.textContent = item; ul.appendChild(li);
+      });
+      viewEl.innerHTML = ""; viewEl.appendChild(ul);
+      viewEl.hidden = false; editEl.hidden = true;
+    }
+    editBtn.addEventListener("click", function(){
+      ta.value = load().join("\n"); viewEl.hidden = true; editEl.hidden = false; ta.focus();
+    });
+    saveBtn.addEventListener("click", function(){
+      var lines = ta.value.split("\n").map(function(s){ return s.trim(); }).filter(function(s){ return s.length>0; });
+      save(lines); render();
+    });
+    cancelBtn.addEventListener("click", render);
+    render();
+  }
+
+  var scopeSection = document.getElementById("tabScope");
+  var editButtons = scopeSection.querySelectorAll('[data-role="edit"]');
+
+  makeEditableText("scopeObjective", "agc-travel-r3-scope-objective",
+    "Enable end-to-end digital handling of Work Trip travel requests in ServiceNow — request creation, funding determination, FCM quotation, approval routing, and booking — extending the platform already built for Study Trips (R1/R2) to a new trip category with its own request flow and approval logic.",
+    editButtons[0]);
+
+  makeEditableText("scopeStart", "agc-travel-r3-scope-start",
+    "Officer, via their Legal Executive (LE), submits a Work Trip request. Unlike Study Trips, there is no prior nomination/course-approval gate — the request goes straight into funding classification and quotation.",
+    editButtons[1]);
+
+  makeEditableText("scopeEnd", "agc-travel-r3-scope-end",
+    "Hard booking confirmed — tickets and hotel vouchers issued by FCM. Pre-trip and post-trip activities are explicitly out of scope for R3 and are covered separately under R4.",
+    editButtons[2]);
+
+  makeEditableList("scopePersonas", "agc-travel-r3-scope-personas",
+    ["Legal Executive (LE) — submits the request on behalf of the officer",
+     "Officer — confirms quotation preference, comments on the TAP",
+     "FCM Travel — provides flight/accommodation/transport quotations, performs soft & hard booking",
+     "Div FBP — prepares/reviews the Travel Approval Paper, provides Budget Table for external funding",
+     "FBP Travel — handles cross-agency budget matters, high-scrutiny visas",
+     "HOD(s) — approve nomination and/or budget; routing depends on trip composition (single division, multi-division, or cross-funded)",
+     "Solicitor General (SG) — final approval",
+     "SCD — new stakeholder division, requirements still in discovery"],
+    editButtons[3]);
+
+  makeEditableList("scopeQuestions", "agc-travel-r3-scope-questions",
+    ["What SCD stands for and what their specific Work Trip requirements are — still unconfirmed",
+     "Front-end nomination-approval mechanics for Work Trips — flagged as \"not yet discovered\" in the Feb 2026 Finance deck; is this resolved now?",
+     "Whether Work-vs-Study trip classification needs runtime logic, or is resolved simply by which request form/entry point is used",
+     "Where the Note Verbale (UNCITRAL) step actually sits in sequence — parallel to booking, or a hard gate before it?",
+     "Travel insurance: is the cost-line calculation in scope for R3's TAP, with the actual procurement action deferred to R4?",
+     "Whether 6 sprints is realistic given the multi-HOD approval routing complexity, or whether 7 (pushing Go-Live to ~25 Jan) is the safer commitment"],
+    editButtons[4]);
+})();
+
+// --- R3 sprint plan cards (editable, one localStorage entry per sprint) ---
+(function(){
+  var SPRINTS = [
+    { id:17, dates:"19 Oct–1 Nov", risk:null,
+      def:["Core Work Trip request/creation flow (no nomination gate — straight to funding classification)",
+           "Funding classification logic: Fully Funded by AGC / Co-Funded / Fully Funded by External, plus per-line-item Sponsored vs. Remaining split ($ or %) — this determines which items need an FCM quote and whether external budget approval upload is required, so it has to exist before quotation or TAP work can start",
+           "Travel vs. Non-Travel classification",
+           "Basic approval routing (single-division case)",
+           "Discovery, front-loaded: SCD requirements, front-end nomination mechanics, PSI-specific requirements, UNCITRAL-specific requirements — builds happen later, requirements get nailed down now"] },
+    { id:18, dates:"2–15 Nov", risk:"Reduced capacity — 1 dev on leave 4–17 Nov",
+      def:["FCM quotation reuse/config for Work Trip (genuinely low-risk — quotation mechanism itself is unchanged)",
+           "Budget approval upload for co-funded trips",
+           "Continue discovery/analysis (SCD, PSI, UNCITRAL) — light enough for reduced capacity"] },
+    { id:19, dates:"16–29 Nov", risk:null,
+      def:["PSI Estimated Cost Breakdown form (calculated fields — highest complexity item)",
+           "Auto-generated email for cost breakdown",
+           "Uses discovery findings from Sprint 17–18"] },
+    { id:20, dates:"30 Nov–13 Dec", risk:null,
+      def:["Multi-HOD dynamic approval routing — real conditional logic based on attendee-division vs. funding-division data, not a config reuse",
+           "SCD-specific implementation, informed by Sprint 17 discovery"] },
+    { id:21, dates:"14–27 Dec", risk:"Spans the Dec holiday period — reduced capacity likely",
+      def:["UNCITRAL Note Verbale flow, built using Sprint 17 discovery findings",
+           "End-to-end integration testing (soft/hard booking for work trips)",
+           "Buffer for spillover"] },
+    { id:22, dates:"28 Dec–10 Jan", risk:null,
+      def:["UAT"] }
+  ];
+
+  var container = document.getElementById("sprintCards");
+
+  function keyFor(id){ return "agc-travel-r3-sprint-" + id; }
+
+  function loadSprintItems(sprint){
+    try {
+      var raw = localStorage.getItem(keyFor(sprint.id));
+      if (!raw) return sprint.def.slice();
+      var parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : sprint.def.slice();
+    } catch(e) { return sprint.def.slice(); }
+  }
+  function saveSprintItems(sprint, items){
+    try { localStorage.setItem(keyFor(sprint.id), JSON.stringify(items)); } catch(e) {}
+  }
+
+  SPRINTS.forEach(function(sprint){
+    var card = document.createElement("div");
+    card.className = "sprint-card";
+
+    var head = document.createElement("div");
+    head.className = "sprint-card-head";
+    head.innerHTML =
+      '<span class="sname">Sprint ' + sprint.id + '</span>' +
+      '<span class="sdates">' + sprint.dates + '</span>' +
+      '<span class="edit-toggle" data-role="edit">Edit</span>';
+    card.appendChild(head);
+
+    if (sprint.risk) {
+      var tag = document.createElement("div");
+      tag.className = "risk-tag";
+      tag.textContent = "⚠ " + sprint.risk;
+      card.appendChild(tag);
+    }
+
+    var body = document.createElement("div");
+    body.className = "sprint-body";
+    var viewEl = document.createElement("div");
+    var editEl = document.createElement("div");
+    editEl.className = "focus-edit";
+    editEl.hidden = true;
+    var ta = document.createElement("textarea");
+    ta.placeholder = "One item per line";
+    var actions = document.createElement("div");
+    actions.className = "focus-actions";
+    var saveBtn = document.createElement("button");
+    saveBtn.className = "btn primary"; saveBtn.textContent = "Save";
+    var cancelBtn = document.createElement("button");
+    cancelBtn.className = "btn"; cancelBtn.textContent = "Cancel";
+    actions.appendChild(saveBtn); actions.appendChild(cancelBtn);
+    editEl.appendChild(ta); editEl.appendChild(actions);
+    body.appendChild(viewEl); body.appendChild(editEl);
+    card.appendChild(body);
+    container.appendChild(card);
+
+    function renderView(){
+      var items = loadSprintItems(sprint);
+      viewEl.innerHTML = "";
+      editEl.hidden = true;
+      viewEl.hidden = false;
+      var ul = document.createElement("ul");
+      ul.className = "focus-list";
+      items.forEach(function(item){
+        var li = document.createElement("li");
+        li.textContent = item;
+        ul.appendChild(li);
+      });
+      viewEl.appendChild(ul);
+    }
+
+    head.querySelector('[data-role="edit"]').addEventListener("click", function(){
+      ta.value = loadSprintItems(sprint).join("\n");
+      viewEl.hidden = true;
+      editEl.hidden = false;
+      ta.focus();
+    });
+    saveBtn.addEventListener("click", function(){
+      var lines = ta.value.split("\n").map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 0; });
+      saveSprintItems(sprint, lines);
+      renderView();
+    });
+    cancelBtn.addEventListener("click", renderView);
+
+    renderView();
+  });
+})();
+</script>

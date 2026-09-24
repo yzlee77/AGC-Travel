@@ -1,0 +1,405 @@
+<title>HR Track Roadmap</title>
+<style>
+  :root{
+    --surface-1:      #fcfcfb;
+    --page:           #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --muted:          #898781;
+    --gridline:       #e1e0d9;
+    --baseline:       #c3c2b7;
+    --border:         rgba(11,11,11,0.10);
+    --blue:           #2a78d6;
+
+    --good:      #0ca30c;
+    --good-tint: #e3f4e0;
+    --warning:      #fab219;
+    --warning-tint: #fdf0d4;
+    --critical:      #d03b3b;
+    --critical-tint: #fae0df;
+    --idle:      #898781;
+    --idle-tint: #ececea;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --surface-1:      #1a1a19;
+      --page:           #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --muted:          #898781;
+      --gridline:       #2c2c2a;
+      --baseline:       #383835;
+      --border:         rgba(255,255,255,0.12);
+      --blue:           #3987e5;
+      --good-tint: #16321a;
+      --warning-tint: #3a2c10;
+      --critical-tint: #3a2321;
+      --idle-tint: #262623;
+    }
+  }
+  :root[data-theme="dark"]{
+    --surface-1:      #1a1a19;
+    --page:           #0d0d0d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --muted:          #898781;
+    --gridline:       #2c2c2a;
+    --baseline:       #383835;
+    --border:         rgba(255,255,255,0.12);
+    --blue:           #3987e5;
+    --good-tint: #16321a;
+    --warning-tint: #3a2c10;
+    --critical-tint: #3a2321;
+    --idle-tint: #262623;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--page);
+    color:var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    padding-inline:20px;
+    padding-block:26px 50px;
+    max-width:1320px;
+    margin-inline:auto;
+  }
+  h1{font-size:1.5rem; font-weight:700; margin:0; text-wrap:balance;}
+  .eyebrow{
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    font-size:.7rem; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--muted); margin-block-end:6px;
+  }
+  .subtitle{color:var(--text-secondary); font-size:.92rem; max-width:70ch; margin-block-start:8px; line-height:1.5;}
+
+  .legend{
+    display:flex; flex-wrap:wrap; gap:16px 22px;
+    margin-block:20px 22px; padding:12px 16px;
+    background:var(--surface-1); border:1px solid var(--border); border-radius:10px;
+  }
+  .legend-item{display:flex; align-items:center; gap:7px; font-size:.8rem; color:var(--text-secondary);}
+  .legend-item svg{flex-shrink:0;}
+  .legend-sep{width:1px; background:var(--gridline); align-self:stretch;}
+  .legend-mark{display:inline-flex; align-items:center; gap:6px;}
+  .diamond{width:10px; height:10px; background:var(--text-primary); transform:rotate(45deg); border-radius:2px; flex-shrink:0;}
+  .today-swatch{width:2px; height:16px; background:var(--blue); flex-shrink:0;}
+
+  .gantt-wrap{
+    overflow-x:auto;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:var(--surface-1);
+  }
+  .gantt{
+    position:relative;
+    width:1320px;
+    padding-block-end:6px;
+  }
+
+  .row{display:flex; align-items:stretch;}
+  .label-cell{
+    width:300px; flex:0 0 300px;
+    position:sticky; left:0; z-index:3;
+    background:var(--surface-1);
+    border-right:1px solid var(--gridline);
+    padding:10px 14px;
+  }
+  .timeline-track{width:1020px; flex:0 0 1020px; position:relative;}
+
+  /* header */
+  .head-row{position:sticky; top:0; z-index:4; background:var(--surface-1);}
+  .month-bands{position:relative; height:22px; border-bottom:1px solid var(--gridline);}
+  .month-band{
+    position:absolute; top:0; height:100%;
+    display:flex; align-items:center; padding-inline-start:8px;
+    font-size:.68rem; font-weight:600; letter-spacing:.04em;
+    color:var(--text-secondary);
+    border-right:1px solid var(--gridline);
+  }
+  .week-row{position:relative; height:26px;}
+  .week-cell{
+    position:absolute; top:0; height:100%; width:60px;
+    border-right:1px solid var(--gridline);
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    font-size:.64rem; color:var(--muted);
+    display:flex; align-items:center; padding-inline-start:5px;
+  }
+  .head-label{display:flex; align-items:flex-end; padding-block-end:6px;
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    font-size:.66rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted);}
+
+  /* milestone lane */
+  .milestone-row{height:38px; border-bottom:1px dashed var(--gridline);}
+  .milestone{
+    position:absolute; top:14px; display:flex; align-items:center; gap:6px;
+    transform:translateX(-5px);
+  }
+  .milestone .diamond{border:1.5px solid var(--warning); background:var(--surface-1);}
+  .milestone.neutral .diamond{border-color:var(--muted);}
+  .milestone-label{font-size:.68rem; color:var(--text-secondary); white-space:nowrap;}
+
+  /* sprint rows */
+  .sprint-row{border-bottom:1px solid var(--gridline); min-height:58px;}
+  .sprint-row:last-child{border-bottom:none;}
+  .sprint-id{font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size:.72rem; font-weight:600; color:var(--text-primary);}
+  .sprint-dates{font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size:.66rem; color:var(--muted); margin-inline-start:8px;}
+  .sprint-summary{font-size:.76rem; color:var(--text-secondary); line-height:1.4; margin-block-start:3px;}
+  .sprint-note{display:flex; align-items:center; gap:5px; font-size:.68rem; color:var(--warning); margin-block-start:4px; font-weight:600;}
+
+  .bar-wrap{position:absolute; top:14px; height:30px; display:flex; align-items:center;}
+  .bar-track{position:relative; height:20px; width:100%; border-radius:6px; overflow:hidden;}
+  .bar-fill{position:absolute; top:0; left:0; height:100%; border-radius:6px;}
+  .bar-chip{
+    position:absolute; left:100%; top:50%; transform:translateY(-50%);
+    margin-inline-start:8px; display:flex; align-items:center; gap:5px;
+    font-size:.68rem; font-weight:600; white-space:nowrap;
+  }
+
+  /* status colors */
+  .st-good .bar-track{background:var(--good-tint);}
+  .st-good .bar-fill{background:var(--good);}
+  .st-good .bar-chip{color:var(--good);}
+  .st-warning .bar-track{background:var(--warning-tint);}
+  .st-warning .bar-fill{background:var(--warning);}
+  .st-warning .bar-chip{color:#9a6a00;}
+  .st-idle .bar-track{background:var(--idle-tint);}
+  .st-idle .bar-fill{background:var(--idle);}
+  .st-idle .bar-chip{color:var(--muted);}
+
+  /* today line */
+  .today-line{position:absolute; top:0; bottom:0; width:2px; background:var(--blue); z-index:2;}
+  .today-flag{
+    position:absolute; top:-24px; left:50%; transform:translateX(-50%);
+    background:var(--blue); color:#fff; font-size:.62rem; font-weight:700;
+    padding:2px 6px; border-radius:4px; white-space:nowrap;
+  }
+
+  .tooltip{
+    position:absolute; bottom:calc(100% + 8px); left:0; z-index:5;
+    background:var(--text-primary); color:var(--surface-1);
+    font-size:.72rem; line-height:1.5; padding:8px 10px; border-radius:8px;
+    width:230px; opacity:0; pointer-events:none; transition:opacity .12s ease;
+    box-shadow:0 4px 14px rgba(0,0,0,.18);
+  }
+  .bar-wrap:hover .tooltip{opacity:1;}
+
+  footer{margin-block-start:22px; color:var(--muted); font-size:.78rem; line-height:1.6; max-width:75ch;}
+
+  @media (max-width:600px){
+    body{padding-inline:12px;}
+  }
+</style>
+
+<p class="eyebrow">ServiceNow &middot; OCS &middot; Track 1 &mdash; HR</p>
+<h1>HR Track Roadmap — mock-up</h1>
+<p class="subtitle">Same sprint data as the current tracker, restyled: status colour instead of a bare progress number, a dedicated milestone lane instead of stars sitting on top of delivery bars, and a "why it's flagged" note wherever a sprint carries known risk.</p>
+
+<div class="legend">
+  <span class="legend-item"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="var(--good)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Complete / on track</span>
+  <span class="legend-item"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 3L22 20H2L12 3Z" stroke="var(--warning)" stroke-width="2.4" stroke-linejoin="round"/><path d="M12 10V14.5" stroke="var(--warning)" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.2" fill="var(--warning)"/></svg>At risk</span>
+  <span class="legend-item"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 3L22 20H2L12 3Z" stroke="var(--critical)" stroke-width="2.4" stroke-linejoin="round"/><path d="M12 10V14.5" stroke="var(--critical)" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.2" fill="var(--critical)"/></svg>Delayed</span>
+  <span class="legend-item"><svg width="13" height="13" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="2.4" rx="1.2" fill="var(--idle)"/></svg>Not started</span>
+  <div class="legend-sep"></div>
+  <span class="legend-item legend-mark"><span class="diamond" style="border:1.5px solid var(--warning); background:transparent;"></span>Milestone</span>
+  <span class="legend-item legend-mark"><span class="today-swatch"></span>Today</span>
+</div>
+
+<div class="gantt-wrap">
+  <div class="gantt">
+
+    <div class="row head-row">
+      <div class="label-cell head-label">Sprint &middot; outcome</div>
+      <div class="timeline-track">
+        <div class="month-bands">
+          <div class="month-band" style="left:0px; width:240px;">September 2026</div>
+          <div class="month-band" style="left:240px; width:240px;">October 2026</div>
+          <div class="month-band" style="left:480px; width:300px;">November 2026</div>
+          <div class="month-band" style="left:780px; width:240px; border-right:none;">December 2026</div>
+        </div>
+        <div class="week-row">
+          <div class="week-cell" style="left:0px;">7 Sep</div>
+          <div class="week-cell" style="left:60px;">14 Sep</div>
+          <div class="week-cell" style="left:120px;">21 Sep</div>
+          <div class="week-cell" style="left:180px;">28 Sep</div>
+          <div class="week-cell" style="left:240px;">5 Oct</div>
+          <div class="week-cell" style="left:300px;">12 Oct</div>
+          <div class="week-cell" style="left:360px;">19 Oct</div>
+          <div class="week-cell" style="left:420px;">26 Oct</div>
+          <div class="week-cell" style="left:480px;">2 Nov</div>
+          <div class="week-cell" style="left:540px;">9 Nov</div>
+          <div class="week-cell" style="left:600px;">16 Nov</div>
+          <div class="week-cell" style="left:660px;">23 Nov</div>
+          <div class="week-cell" style="left:720px;">30 Nov</div>
+          <div class="week-cell" style="left:780px;">7 Dec</div>
+          <div class="week-cell" style="left:840px;">14 Dec</div>
+          <div class="week-cell" style="left:900px; border-right:none;">21 Dec</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row milestone-row">
+      <div class="label-cell" style="border-right:1px solid var(--gridline);"></div>
+      <div class="timeline-track">
+        <div class="milestone" style="left:180px;">
+          <span class="diamond"></span>
+          <span class="milestone-label">R3 Go-Live &middot; target 28 Sep</span>
+        </div>
+        <div class="milestone neutral" style="left:951px;">
+          <span class="diamond"></span>
+          <span class="milestone-label">Planned R4 Go-Live &middot; 27 Dec</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sprint 17 -->
+    <div class="row sprint-row">
+      <div class="label-cell">
+        <span class="sprint-id">Sprint 17</span><span class="sprint-dates">7&ndash;20 Sep</span>
+        <div class="sprint-summary">Offboarding (Posted Out, Secondment) &middot; user feedback &middot; R4 discovery</div>
+      </div>
+      <div class="timeline-track">
+        <div class="bar-wrap st-good" style="left:0px; width:120px;">
+          <div class="bar-track"><div class="bar-fill" style="width:100%;"></div></div>
+          <div class="tooltip">
+            <strong>Sprint 17 &middot; 100%</strong><br>
+            Development: Offboarding (Posted Out, Secondment, End of Secondment)<br>
+            Development: feedback from users, sprint review<br>
+            R4: discovery and temp onboarding
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sprint 18 -->
+    <div class="row sprint-row">
+      <div class="label-cell">
+        <span class="sprint-id">Sprint 18</span><span class="sprint-dates">21 Sep&ndash;4 Oct</span>
+        <div class="sprint-summary">UAT for R3 &middot; R3 Go-Live &middot; discovery: Transfer Out &amp; Sponsored Studies</div>
+        <div class="sprint-note">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M12 3L22 20H2L12 3Z" stroke="currentColor" stroke-width="3"/><path d="M12 10V14.5" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>
+          R3 feedback finalized late (18 Sep) — 2-day window to action it
+        </div>
+      </div>
+      <div class="timeline-track">
+        <div class="bar-wrap st-warning" style="left:120px; width:120px;">
+          <div class="bar-track"><div class="bar-fill" style="width:10%;"></div></div>
+          <div class="tooltip">
+            <strong>Sprint 18 &middot; 10% &middot; At risk</strong><br>
+            UAT for R3 (Sprints 12&ndash;17)<br>
+            R3 Go-Live (target 28 Sep)<br>
+            Development: Temp Onboarding/Offboarding &amp; feedback items<br>
+            Discovery: Offboarding movement type (Transfer Out &amp; Sponsored Studies)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sprint 19 -->
+    <div class="row sprint-row">
+      <div class="label-cell">
+        <span class="sprint-id">Sprint 19</span><span class="sprint-dates">5&ndash;18 Oct</span>
+        <div class="sprint-summary">Dev: Transfer Out &amp; Sponsored Studies &middot; discovery: No Pay Leave &amp; End of Attachment</div>
+        <div class="sprint-note">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M12 3L22 20H2L12 3Z" stroke="currentColor" stroke-width="3"/><path d="M12 10V14.5" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="12" cy="17.3" r="1.3" fill="currentColor"/></svg>
+          R4 kickoff inherits Sprint 18's compressed start
+        </div>
+      </div>
+      <div class="timeline-track">
+        <div class="bar-wrap st-warning" style="left:240px; width:120px;">
+          <div class="bar-track"><div class="bar-fill" style="width:0%;"></div></div>
+          <div class="tooltip">
+            <strong>Sprint 19 &middot; Start of R4 &middot; At risk</strong><br>
+            Development: Offboarding movement type (Transfer Out &amp; Sponsored Studies)<br>
+            Discovery: Offboarding movement type (No Pay Leave &amp; End of Attachment)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sprint 20 -->
+    <div class="row sprint-row">
+      <div class="label-cell">
+        <span class="sprint-id">Sprint 20</span><span class="sprint-dates">19 Oct&ndash;1 Nov</span>
+        <div class="sprint-summary">Dev: No Pay Leave &amp; End of Attachment &middot; discovery: Retirement &amp; App Services</div>
+      </div>
+      <div class="timeline-track">
+        <div class="bar-wrap st-idle" style="left:360px; width:120px;">
+          <div class="bar-track"><div class="bar-fill" style="width:0%;"></div></div>
+          <div class="tooltip">
+            <strong>Sprint 20 &middot; Not started</strong><br>
+            Development: Offboarding movement type (No Pay Leave &amp; End of Attachment)<br>
+            Discovery: Offboarding movement type (Retirement &amp; App Services)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sprint 21 -->
+    <div class="row sprint-row">
+      <div class="label-cell">
+        <span class="sprint-id">Sprint 21</span><span class="sprint-dates">2&ndash;15 Nov</span>
+        <div class="sprint-summary">Dev: Retirement &amp; App Services &middot; discovery: Crossboarding</div>
+      </div>
+      <div class="timeline-track">
+        <div class="bar-wrap st-idle" style="left:480px; width:120px;">
+          <div class="bar-track"><div class="bar-fill" style="width:0%;"></div></div>
+          <div class="tooltip">
+            <strong>Sprint 21 &middot; Not started</strong><br>
+            Development: Offboarding movement type (Retirement &amp; App Services)<br>
+            Discovery: Crossboarding
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sprint 22 -->
+    <div class="row sprint-row">
+      <div class="label-cell">
+        <span class="sprint-id">Sprint 22</span><span class="sprint-dates">16&ndash;29 Nov</span>
+        <div class="sprint-summary">Development: Crossboarding</div>
+      </div>
+      <div class="timeline-track">
+        <div class="bar-wrap st-idle" style="left:600px; width:120px;">
+          <div class="bar-track"><div class="bar-fill" style="width:0%;"></div></div>
+          <div class="tooltip"><strong>Sprint 22 &middot; Not started</strong><br>Development: Crossboarding</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sprint 23 -->
+    <div class="row sprint-row">
+      <div class="label-cell">
+        <span class="sprint-id">Sprint 23</span><span class="sprint-dates">30 Nov&ndash;13 Dec</span>
+        <div class="sprint-summary">UAT for R4 (Sprints 19&ndash;24)</div>
+      </div>
+      <div class="timeline-track">
+        <div class="bar-wrap st-idle" style="left:720px; width:120px;">
+          <div class="bar-track"><div class="bar-fill" style="width:0%;"></div></div>
+          <div class="tooltip"><strong>Sprint 23 &middot; Not started</strong><br>UAT for R4 (Sprints 19&ndash;24)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sprint 24 -->
+    <div class="row sprint-row">
+      <div class="label-cell">
+        <span class="sprint-id">Sprint 24</span><span class="sprint-dates">14&ndash;27 Dec</span>
+        <div class="sprint-summary">R4 Go-Live</div>
+      </div>
+      <div class="timeline-track">
+        <div class="bar-wrap st-idle" style="left:840px; width:120px;">
+          <div class="bar-track"><div class="bar-fill" style="width:0%;"></div></div>
+          <div class="tooltip"><strong>Sprint 24 &middot; Not started</strong><br>R4 Go-Live</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="today-line" style="left:428px;">
+      <span class="today-flag">Today &middot; 22 Sep</span>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  Status is set from known risk, not just elapsed-time math — Sprint 18 is flagged amber even though 10% roughly tracks a sprint that just started, because the R3 feedback delay we logged separately makes its finish date the real risk. Hover any bar for the full outcome list. Dates and outcomes are taken as-is from the current tracker; only the presentation changed.
+</footer>

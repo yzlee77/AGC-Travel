@@ -1,0 +1,196 @@
+<title>Release Roadmap Preview</title>
+<style>
+  :root{
+    --bg:#f2f0e6; --surface:#fbfaf3; --surface-alt:#eae7d9;
+    --ink:#1e2a2c; --ink-soft:#57635f; --muted:#898781;
+    --line:#d6d2c2; --border:rgba(11,11,11,0.10);
+    --blue:#2a78d6;
+    --good:#0ca30c; --good-tint:#e3f4e0;
+    --warning:#c98500; --warning-tint:#fdf0d4; --warning-text:#8a6000;
+    --idle:#898781; --idle-tint:#ececea;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#11181a; --surface:#1a2224; --surface-alt:#20292b;
+      --ink:#e9e6da; --ink-soft:#a4aca6; --muted:#8b9490;
+      --line:#333e3d; --border:rgba(255,255,255,0.12);
+      --blue:#7fabdc;
+      --good:#5fc463; --good-tint:#183a1c;
+      --warning:#e0b04a; --warning-tint:#3a2c10; --warning-text:#e0b04a;
+      --idle:#9aa39e; --idle-tint:#262e2c;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#11181a; --surface:#1a2224; --surface-alt:#20292b;
+    --ink:#e9e6da; --ink-soft:#a4aca6; --muted:#8b9490;
+    --line:#333e3d; --border:rgba(255,255,255,0.12);
+    --blue:#7fabdc;
+    --good:#5fc463; --good-tint:#183a1c;
+    --warning:#e0b04a; --warning-tint:#3a2c10; --warning-text:#e0b04a;
+    --idle:#9aa39e; --idle-tint:#262e2c;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    padding-inline:20px; padding-block:26px 50px;
+    max-width:1080px; margin-inline:auto;
+  }
+  h1{font-size:1.4rem; font-weight:700; margin:0 0 6px; text-wrap:balance;}
+  .eyebrow{font-family: ui-monospace, Consolas, monospace; font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+  .subtitle{color:var(--ink-soft); font-size:.9rem; max-width:70ch; line-height:1.5; margin-block:6px 22px;}
+
+  .legend{display:flex; flex-wrap:wrap; gap:14px 22px; margin-block-end:20px; padding:11px 15px; background:var(--surface); border:1px solid var(--border); border-radius:10px;}
+  .legend-item{display:flex; align-items:center; gap:7px; font-size:.78rem; color:var(--ink-soft);}
+  .swatch{width:14px; height:10px; border-radius:3px; flex-shrink:0;}
+  .diamond{width:9px; height:9px; background:var(--ink); transform:rotate(45deg); border-radius:2px; flex-shrink:0;}
+  .today-swatch{width:2px; height:14px; background:var(--blue); flex-shrink:0;}
+
+  .board{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px 20px 10px; overflow-x:auto;}
+  .chart{position:relative; min-width:820px;}
+
+  .month-row{display:flex; height:26px; border-bottom:1px solid var(--line); margin-inline-start:150px;}
+  .month-cell{flex:1; font-family: ui-monospace, Consolas, monospace; font-size:.68rem; color:var(--muted); display:flex; align-items:center; border-right:1px dashed var(--line);}
+  .month-cell:last-child{border-right:none;}
+
+  .track-group{margin-block-start:18px;}
+  .track-label{
+    font-family: ui-monospace, Consolas, monospace; font-size:.72rem; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--ink-soft); font-weight:600; margin-block-end:6px;
+  }
+  .row{display:flex; align-items:center; height:44px; position:relative;}
+  .row-label{width:150px; flex:0 0 150px; font-size:.82rem; font-weight:600; padding-inline-end:10px;}
+  .row-track{flex:1; position:relative; height:100%;}
+  .grid-bg{position:absolute; inset:0; display:flex;}
+  .grid-col{flex:1; border-right:1px dashed var(--line);}
+  .grid-col:last-child{border-right:none;}
+
+  .bar{position:absolute; top:11px; height:22px; border-radius:6px; display:flex; align-items:center; overflow:visible;}
+  .bar-label{position:absolute; left:10px; font-size:.74rem; font-weight:600; white-space:nowrap; color:var(--ink);}
+  .bar.st-good{background:var(--good-tint); border:1.5px solid var(--good);}
+  .bar.st-good .bar-label{color:var(--good);}
+  .bar.st-warning{background:var(--warning-tint); border:1.5px solid var(--warning);}
+  .bar.st-warning .bar-label{color:var(--warning-text);}
+  .bar.st-idle{background:var(--idle-tint); border:1.5px dashed var(--idle);}
+  .bar.st-idle .bar-label{color:var(--muted);}
+
+  .badge{
+    position:absolute; left:0; top:11px; height:22px; padding:0 10px;
+    display:flex; align-items:center; gap:6px; border-radius:6px;
+    background:var(--good-tint); border:1.5px solid var(--good); font-size:.74rem; font-weight:600; color:var(--good);
+  }
+  .badge svg{flex-shrink:0;}
+
+  .milestone{position:absolute; top:-15px; display:flex; flex-direction:column; align-items:center; gap:2px; transform:translateX(-50%); z-index:3;}
+  .milestone-label{font-size:.68rem; color:var(--ink-soft); white-space:nowrap; background:var(--surface); padding:0 3px;}
+
+  .today-line{position:absolute; top:0; bottom:0; width:2px; background:var(--blue); z-index:4;}
+  .today-flag{position:absolute; top:-22px; left:50%; transform:translateX(-50%); background:var(--blue); color:#fff; font-size:.62rem; font-weight:700; padding:2px 6px; border-radius:4px; white-space:nowrap;}
+
+  footer{margin-block-start:18px; color:var(--muted); font-size:.78rem; line-height:1.6; max-width:75ch;}
+</style>
+
+<p class="eyebrow">AGC Project · Weekly Update Timeline — Draft for Review</p>
+<h1>Release Roadmap (high-level)</h1>
+<p class="subtitle">One bar per release/phase instead of per sprint — this is the level of detail meant for the weekly PM slide. Sprint-level detail stays in the working tracker; this is what leadership actually needs to see at a glance.</p>
+
+<div class="legend">
+  <span class="legend-item"><span class="swatch" style="background:var(--good-tint); border:1.5px solid var(--good);"></span>Live / on track</span>
+  <span class="legend-item"><span class="swatch" style="background:var(--warning-tint); border:1.5px solid var(--warning);"></span>In progress — watch</span>
+  <span class="legend-item"><span class="swatch" style="background:var(--idle-tint); border:1.5px dashed var(--idle);"></span>Planned / dates TBD</span>
+  <span class="legend-item"><span class="diamond"></span>UAT / Go-live milestone</span>
+  <span class="legend-item"><span class="today-swatch"></span>Today</span>
+</div>
+
+<div class="board">
+  <div class="chart" id="chart">
+
+    <div class="month-row">
+      <div class="month-cell">August</div>
+      <div class="month-cell">September</div>
+      <div class="month-cell">October</div>
+      <div class="month-cell">November</div>
+      <div class="month-cell">December</div>
+    </div>
+
+    <div class="track-group">
+      <div class="track-label">HR Track</div>
+
+      <div class="row">
+        <div class="row-label">R1 – R2</div>
+        <div class="row-track">
+          <div class="grid-bg"><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div></div>
+          <div class="badge"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Prior releases — live</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="row-label">R3 (Offboarding)</div>
+        <div class="row-track">
+          <div class="grid-bg"><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div></div>
+          <div class="bar st-good" style="left:0%; width:37.9%;"><span class="bar-label">Baseline + movement-type expansion</span></div>
+          <div class="milestone" style="left:37.9%;"><span class="diamond"></span><span class="milestone-label">R3 Go-Live 28 Sep</span></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="row-label">R4 (Next)</div>
+        <div class="row-track">
+          <div class="grid-bg"><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div></div>
+          <div class="bar st-warning" style="left:42.5%; width:54.2%;"><span class="bar-label">Feedback items + Temp Onboarding</span></div>
+          <div class="milestone" style="left:42.5%;"><span class="diamond"></span><span class="milestone-label">R4 starts</span></div>
+          <div class="milestone" style="left:96.7%;"><span class="diamond"></span><span class="milestone-label">R4 Go-Live 27 Dec</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="track-group">
+      <div class="track-label">Travel Track</div>
+
+      <div class="row">
+        <div class="row-label">Phase 1</div>
+        <div class="row-track">
+          <div class="grid-bg"><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div></div>
+          <div class="badge"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Mega Paper — live</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="row-label">Phase 2 / R2</div>
+        <div class="row-track">
+          <div class="grid-bg"><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div></div>
+          <div class="bar st-warning" style="left:0%; width:51.6%;"><span class="bar-label">Ad-hoc, Approval &amp; Booking</span></div>
+          <div class="milestone" style="left:42.5%;"><span class="diamond" style="background:var(--blue);"></span><span class="milestone-label">UAT 5 Oct</span></div>
+          <div class="milestone" style="left:51.6%;"><span class="diamond" style="background:var(--blue);"></span><span class="milestone-label">Go-Live 19 Oct</span></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="row-label">Phase 3</div>
+        <div class="row-track">
+          <div class="grid-bg"><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div></div>
+          <div class="bar st-idle" style="left:51.6%; width:35%;"><span class="bar-label">Work Trip — dates TBD</span></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="row-label">Phase 4</div>
+        <div class="row-track">
+          <div class="grid-bg"><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div></div>
+          <div class="bar st-idle" style="left:70%; width:30%;"><span class="bar-label">Pre &amp; Post Trip — dates TBD</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- today line only: spans the full board height, aligned to the same time axis as every row -->
+    <div id="overlay" style="position:absolute; left:150px; right:0; top:26px; bottom:0; pointer-events:none;">
+      <div class="today-line" style="left:34.0%;"><span class="today-flag">Today</span></div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  Bars truncated at the left edge mean "already underway before this window." Phase 3/4 for Travel show as dashed/grey because no dates are confirmed yet — the block width is a placeholder, not a commitment. This is a proof-of-concept for the visual language only; happy to adjust what counts as "watch" vs "on track," add/remove milestones, or rescale the window.
+</footer>
