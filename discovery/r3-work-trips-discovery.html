@@ -95,14 +95,15 @@
   .fbtn.danger:hover{background:rgba(255,107,107,.12)}
 
   /* as-is flow */
-  .flowlist{display:flex;flex-direction:column;gap:11px;margin-top:38px;max-width:640px;width:100%;text-align:left}
+  .flowrow{display:flex;align-items:center;justify-content:center;gap:36px;flex-wrap:wrap;margin-top:38px;width:100%}
+  .flowlist{display:flex;flex-direction:column;gap:11px;max-width:600px;width:100%;text-align:left}
   .flowstep{display:flex;gap:16px;align-items:flex-start;padding:16px 20px}
   .flowstep .sn{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:rgba(94,158,255,.14);color:var(--blue);font-weight:700;font-size:15px}
   .flowstep .st{font-size:clamp(14.5px,1.6vw,16.5px);color:var(--ink);line-height:1.4;text-align:left}
   .flowstep .st i{color:var(--ink-faint);font-style:normal}
-  .imgtoggle{display:inline-flex;align-items:center;gap:10px;margin:28px auto 0;padding:12px 22px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.05);color:var(--ink-soft);cursor:pointer;font-family:inherit;font-size:13.5px;font-weight:600;transition:background .15s,color .15s,border-color .15s}
+  .imgtoggle{display:inline-flex;flex:none;flex-direction:column;align-items:center;gap:10px;margin:0;padding:22px 26px;border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.05);color:var(--ink-soft);cursor:pointer;font-family:inherit;font-size:13.5px;font-weight:600;text-align:center;max-width:180px;transition:background .15s,color .15s,border-color .15s}
   .imgtoggle:hover{background:rgba(255,255,255,.1);color:var(--ink);border-color:var(--ink-soft)}
-  .imgtoggle svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+  .imgtoggle svg{width:26px;height:26px;stroke:currentColor;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 
   .lightbox{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:clamp(16px,4vw,48px);opacity:0;pointer-events:none;transition:opacity .3s var(--ease)}
   .lightbox[aria-hidden="false"]{opacity:1;pointer-events:auto}
@@ -197,18 +198,20 @@
   <section class="slide">
     <div class="num r" style="--d:.05s">01 &middot; AS-IS FLOW</div>
     <h2 class="r" style="--d:.12s">The journey, today.</h2>
-    <div class="flowlist r" style="--d:.22s">
-      <div class="glass flowstep"><span class="sn">1</span><span class="st">LE obtains nomination approval <i>— not yet discovered</i></span></div>
-      <div class="glass flowstep"><span class="sn">2</span><span class="st">Funding type is determined — fully AGC, co-funded, or fully external</span></div>
-      <div class="glass flowstep"><span class="sn">3</span><span class="st">LE gets an FCM quote — for all items, or only those AGC manages</span></div>
-      <div class="glass flowstep"><span class="sn">4</span><span class="st">Officer accepts the quotation</span></div>
-      <div class="glass flowstep"><span class="sn">5</span><span class="st">Div FBP prepares and submits the Travel Approval Paper (TAP)</span></div>
-      <div class="glass flowstep"><span class="sn">6</span><span class="st">FCM performs soft booking, then hard booking once approved</span></div>
+    <div class="flowrow">
+      <div class="flowlist r" style="--d:.22s">
+        <div class="glass flowstep"><span class="sn">1</span><span class="st">LE obtains nomination approval <i>— not yet discovered</i></span></div>
+        <div class="glass flowstep"><span class="sn">2</span><span class="st">Funding type is determined — fully AGC, co-funded, or fully external</span></div>
+        <div class="glass flowstep"><span class="sn">3</span><span class="st">LE gets an FCM quote — for all items, or only those AGC manages</span></div>
+        <div class="glass flowstep"><span class="sn">4</span><span class="st">Officer accepts the quotation</span></div>
+        <div class="glass flowstep"><span class="sn">5</span><span class="st">Div FBP prepares and submits the Travel Approval Paper (TAP)</span></div>
+        <div class="glass flowstep"><span class="sn">6</span><span class="st">FCM performs soft booking, then hard booking once approved</span></div>
+      </div>
+      <button class="imgtoggle r" id="flowImgBtn" style="--d:.3s">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 15l5-5 4 4 4-4 5 5"/><circle cx="8" cy="9" r="1.4" fill="currentColor" stroke="none"/></svg>
+        View As-Is Process Flow diagram
+      </button>
     </div>
-    <button class="imgtoggle r" id="flowImgBtn" style="--d:.3s">
-      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 15l5-5 4 4 4-4 5 5"/><circle cx="8" cy="9" r="1.4" fill="currentColor" stroke="none"/></svg>
-      View As-Is Process Flow diagram
-    </button>
   </section>
 
   <section class="slide">
@@ -340,8 +343,7 @@
 <button class="navbtn" id="prev" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
 <button class="navbtn" id="next" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
 <button class="fsbtn" id="fsToggle" aria-label="Toggle fullscreen">
-  <svg viewBox="0 0 24 24" id="fsIconExpand"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/></svg>
-  <svg viewBox="0 0 24 24" id="fsIconCollapse" hidden><path d="M9 3v3a2 2 0 0 1-2 2H4M20 9h-3a2 2 0 0 1-2-2V4M15 20v-3a2 2 0 0 1 2-2h3M4 15h3a2 2 0 0 1 2 2v3"/></svg>
+  <svg viewBox="0 0 24 24" id="fsIcon"><path id="fsIconPath" d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/></svg>
 </button>
 <div class="dots" id="dots"></div>
 <div class="hint r" id="hint" style="--d:.4s">Use <kbd>&larr;</kbd> <kbd>&rarr;</kbd> or swipe &middot; click a step for detail</div>
@@ -769,14 +771,15 @@
 // --- Fullscreen toggle for the whole deck ---
 (function(){
   const btn=document.getElementById('fsToggle');
-  const iconExpand=document.getElementById('fsIconExpand');
-  const iconCollapse=document.getElementById('fsIconCollapse');
+  const iconPath=document.getElementById('fsIconPath');
   if(!btn)return;
+
+  const EXPAND_D="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3";
+  const COLLAPSE_D="M9 3v3a2 2 0 0 1-2 2H4M20 9h-3a2 2 0 0 1-2-2V4M15 20v-3a2 2 0 0 1 2-2h3M4 15h3a2 2 0 0 1 2 2v3";
 
   function updateIcon(){
     const isFs=!!document.fullscreenElement;
-    iconExpand.hidden=isFs;
-    iconCollapse.hidden=!isFs;
+    iconPath.setAttribute('d', isFs?COLLAPSE_D:EXPAND_D);
   }
 
   btn.addEventListener('click', ()=>{
