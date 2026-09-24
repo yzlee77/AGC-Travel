@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="en-SG">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#000000" />
+<title>R3 Discovery · AGC Travel</title>
+<style>
+  :root{
+    --blue:#5e9eff; --blue-2:#8ab4ff;
+    --amber:#ffc266; --amber-deep:#f5a623;
+    --ink:#f5f5f7; --ink-soft:#aeaeb4; --ink-faint:#86868b;
+    --bg:#000; --card:rgba(255,255,255,.055); --line:rgba(255,255,255,.12);
+    --radius:24px; --ease:cubic-bezier(.2,.8,.2,1);
+    --font:-apple-system,"SF Pro Display","SF Pro Text",system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono: ui-monospace, "SF Mono", Consolas, monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  html,body{height:100%}
+  body{font-family:var(--font);color:var(--ink);background:var(--bg);color-scheme:dark;overflow:hidden;position:relative}
+
+  .wash{position:fixed;inset:-25%;z-index:0;filter:blur(80px);opacity:.85;pointer-events:none}
+  .blob{position:absolute;border-radius:50%;mix-blend-mode:screen;animation:drift 26s var(--ease) infinite alternate}
+  .b1{width:48vw;height:48vw;left:-6vw;top:-10vw;background:radial-gradient(circle at 30% 30%,rgba(46,86,196,.55),transparent 70%)}
+  .b2{width:44vw;height:44vw;right:-10vw;top:2vw;background:radial-gradient(circle at 60% 40%,rgba(245,166,35,.28),transparent 70%);animation-delay:-8s}
+  .b3{width:54vw;height:54vw;left:16vw;bottom:-20vw;background:radial-gradient(circle at 50% 50%,rgba(60,110,230,.4),transparent 70%);animation-delay:-15s}
+  @keyframes drift{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(4vw,3vh,0) scale(1.12)}}
+
+  .bar{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--blue),var(--amber));z-index:8;transition:width .5s var(--ease)}
+  .deck{position:fixed;inset:0;z-index:1}
+  .slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:clamp(24px,6vw,92px);opacity:0;transform:translateY(34px) scale(.985);transition:opacity .6s var(--ease),transform .7s var(--ease);pointer-events:none;overflow-y:auto}
+  .slide.active{opacity:1;transform:none;pointer-events:auto}
+  .r{opacity:0;transform:translateY(26px)}
+  .slide.active .r{animation:rise .9s var(--ease) forwards;animation-delay:var(--d,0s)}
+  @keyframes rise{to{opacity:1;transform:none}}
+
+  .eyebrow{font-size:clamp(13px,1.5vw,17px);font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:20px}
+  .eyebrow.amber{color:var(--amber)}
+  h1{font-size:clamp(38px,6.6vw,90px);line-height:1.03;font-weight:700;letter-spacing:-.025em}
+  h2{font-size:clamp(27px,4.4vw,54px);line-height:1.08;font-weight:700;letter-spacing:-.022em}
+  .grad{background:linear-gradient(110deg,var(--blue),var(--blue-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .gradA{background:linear-gradient(110deg,var(--amber),#ffd591);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .kick{margin:22px auto 0;color:var(--ink-soft);font-size:clamp(15px,1.8vw,21px);max-width:56ch;line-height:1.5}
+  .num{font-size:12.5px;font-weight:700;letter-spacing:.14em;color:var(--blue);border:1px solid rgba(94,158,255,.3);background:rgba(94,158,255,.12);border-radius:999px;padding:6px 15px;margin-bottom:24px}
+  .num.amber{color:var(--amber);border-color:rgba(255,194,102,.32);background:rgba(245,166,35,.12)}
+
+  .glass{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 24px 70px -34px rgba(0,0,0,.85)}
+
+  .hint{position:absolute;bottom:38px;left:0;right:0;font-size:13px;color:var(--ink-faint);font-weight:500}
+  .hint kbd{font-family:var(--font);background:rgba(255,255,255,.08);border:1px solid var(--line);border-radius:6px;padding:2px 7px;font-size:11.5px;color:var(--ink-soft)}
+
+  .navbtn{position:fixed;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:50%;background:var(--card);border:1px solid var(--line);backdrop-filter:blur(12px);color:var(--ink-soft);z-index:9;display:grid;place-items:center;cursor:pointer;transition:opacity .2s,background .2s}
+  .navbtn:hover{background:rgba(255,255,255,.1);color:var(--ink)}
+  .navbtn:disabled{opacity:0;pointer-events:none}
+  #prev{left:22px} #next{right:22px}
+  .navbtn svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none}
+  .dots{position:fixed;bottom:14px;left:0;right:0;display:flex;gap:9px;justify-content:center;z-index:9}
+  .dots button{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.22);border:none;cursor:pointer;transition:background .2s,transform .2s}
+  .dots button.on{background:var(--blue);transform:scale(1.5)}
+
+  /* agenda */
+  .agenda{display:flex;flex-direction:column;gap:14px;margin-top:38px;max-width:620px;width:100%;text-align:left}
+  .agitem{display:flex;gap:18px;align-items:center;padding:20px 24px}
+  .agitem .an{flex:none;font-family:var(--mono);font-size:13px;font-weight:700;color:var(--blue);width:26px}
+  .agitem .at{font-size:clamp(16px,1.9vw,20px);font-weight:650}
+  .agitem .as{font-size:12.5px;color:var(--ink-faint);margin-top:2px}
+
+  /* personas */
+  .roles{display:flex;flex-wrap:wrap;gap:clamp(10px,1.4vw,14px);justify-content:center;margin-top:40px;max-width:1020px}
+  .rolechip{position:relative;padding:16px 20px;min-width:150px;text-align:center;display:flex;flex-direction:column;gap:5px;align-items:center}
+  .rolechip .rn{font-size:clamp(14px,1.5vw,16px);font-weight:650}
+  .rolechip .rr{font-size:11.5px;color:var(--ink-soft);line-height:1.35;max-width:20ch}
+  .rc-edit{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.08);border:none;color:var(--ink-faint);display:grid;place-items:center;cursor:pointer;font-size:12px;opacity:.75;transition:opacity .15s,background .15s}
+  .rc-edit:hover{opacity:1;background:rgba(255,255,255,.16);color:var(--ink)}
+  .addchip{border-style:dashed;background:transparent;cursor:pointer;color:var(--ink-faint);font-family:inherit;justify-content:center}
+  .addchip:hover{color:var(--ink);border-color:var(--ink-soft)}
+  .addchip .plus{font-size:24px;line-height:1}
+
+  /* edit form (shared by persona modal) */
+  .ffield{margin-top:16px;text-align:left}
+  .ffield label{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px}
+  .ffield input{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:var(--ink);font-family:inherit;font-size:14.5px}
+  .ffield input:focus{outline:none;border-color:var(--blue)}
+  .ffield textarea{width:100%;min-height:84px;resize:vertical;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:var(--ink);font-family:inherit;font-size:14px;line-height:1.5}
+  .ffield textarea:focus{outline:none;border-color:var(--blue)}
+  .factions{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+  .fbtn{font-family:inherit;font-size:13px;font-weight:600;border-radius:10px;padding:9px 18px;cursor:pointer;border:1px solid var(--line);background:none;color:var(--ink-soft)}
+  .fbtn:hover{background:rgba(255,255,255,.06);color:var(--ink)}
+  .fbtn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+  .fbtn.primary:hover{background:var(--blue-2)}
+  .fbtn.danger{color:#ff8080;border-color:rgba(255,107,107,.3)}
+  .fbtn.danger:hover{background:rgba(255,107,107,.12)}
+
+  /* as-is flow */
+  .flowlist{display:flex;flex-direction:column;gap:11px;margin-top:38px;max-width:640px;width:100%;text-align:left}
+  .flowstep{display:flex;gap:16px;align-items:flex-start;padding:16px 20px}
+  .flowstep .sn{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:rgba(94,158,255,.14);color:var(--blue);font-weight:700;font-size:15px}
+  .flowstep .st{font-size:clamp(14.5px,1.6vw,16.5px);color:var(--ink);line-height:1.4;text-align:left}
+  .flowstep .st i{color:var(--ink-faint);font-style:normal}
+
+  /* A/B/C column breakdown */
+  .cols{display:flex;gap:clamp(14px,2vw,22px);justify-content:center;margin-top:36px;max-width:1120px;width:100%;flex-wrap:wrap}
+  .col{width:330px;padding:22px 20px;text-align:left;display:flex;flex-direction:column;gap:14px}
+  .col .chead{display:flex;align-items:baseline;gap:9px}
+  .col .clabel{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+  .col.a .clabel{color:var(--blue)}
+  .col.b .clabel{color:var(--amber)}
+  .col.c .clabel{color:#7fe0a8}
+  .col .ctitle{font-size:clamp(17px,1.9vw,21px);font-weight:700;letter-spacing:-.01em}
+  .clist{display:flex;flex-direction:column;gap:10px}
+  .node{position:relative;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:14px;padding:14px 38px 14px 16px;text-align:left;cursor:pointer;transition:background .15s,transform .15s;font-family:inherit;color:var(--ink);width:100%}
+  .node:hover{background:rgba(255,255,255,.09);transform:translateY(-2px)}
+  .node .nrow{display:flex;align-items:baseline;gap:9px}
+  .node .nk{flex:none;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.05em}
+  .col.a .node .nk{color:var(--blue)}
+  .col.b .node .nk{color:var(--amber)}
+  .col.c .node .nk{color:#7fe0a8}
+  .node .nt{font-size:14.5px;font-weight:650;line-height:1.3}
+  .node .go{position:absolute;top:50%;right:12px;transform:translateY(-50%);color:var(--ink-faint);font-size:16px}
+  .ne-edit{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.08);border:none;color:var(--ink-faint);display:grid;place-items:center;cursor:pointer;font-size:10px;opacity:.75;transition:opacity .15s,background .15s}
+  .ne-edit:hover{opacity:1;background:rgba(255,255,255,.18);color:var(--ink)}
+  .addnode{background:transparent;border:1px dashed var(--line);border-radius:14px;padding:13px 16px;text-align:center;cursor:pointer;color:var(--ink-faint);font-family:inherit;font-size:13px;width:100%;transition:color .15s,border-color .15s}
+  .addnode:hover{color:var(--ink);border-color:var(--ink-soft)}
+
+  /* detail overlay */
+  .detail{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .3s var(--ease)}
+  .detail[aria-hidden="false"]{opacity:1;pointer-events:auto}
+  .detail .scrim{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+  .detail .panel{position:relative;width:min(640px,94vw);max-height:82vh;overflow-y:auto;padding:clamp(28px,4vw,42px);text-align:left;transform:translateY(16px) scale(.98);transition:transform .3s var(--ease)}
+  .detail[aria-hidden="false"] .panel{transform:none}
+  .detail .dphase{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)}
+  .detail .dtitle{font-size:clamp(22px,3vw,30px);font-weight:700;margin-top:8px;letter-spacing:-.015em}
+  .detail .dkeys{display:flex;flex-direction:column;gap:10px;margin-top:22px}
+  .dkey{display:flex;gap:12px;align-items:flex-start;font-size:14.5px;line-height:1.5;color:var(--ink)}
+  .dkey .kn{flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:rgba(94,158,255,.16);color:var(--blue);font-size:12px;font-weight:700;margin-top:1px}
+  .daside{margin-top:26px;padding-top:20px;border-top:1px solid var(--line)}
+  .daside .dat{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);margin-bottom:12px}
+  .daitem{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.5;color:var(--ink-soft);margin-bottom:9px}
+  .daitem .dic{flex:none;color:var(--amber);font-weight:800;margin-top:1px}
+  .dback{margin-top:26px;font-family:inherit;font-size:13px;font-weight:600;color:var(--ink-soft);background:none;border:1px solid var(--line);border-radius:10px;padding:9px 18px;cursor:pointer}
+  .dback:hover{color:var(--ink);background:rgba(255,255,255,.06)}
+
+  @media (max-width:640px){
+    .navbtn{display:none}
+    .slide{position:relative;inset:auto;opacity:1!important;transform:none!important;padding:60px 22px;min-height:100vh}
+    .deck{position:static;overflow-y:auto;height:auto}
+    .dots,.bar{display:none}
+    body{overflow-y:auto}
+  }
+</style>
+</head>
+<body>
+
+<div class="wash"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div class="bar" id="bar"></div>
+
+<div class="deck" id="deck">
+
+  <section class="slide">
+    <div class="eyebrow r" style="--d:.05s">AGC Travel &middot; R3</div>
+    <h1 class="r" style="--d:.12s">Work Trips.</h1>
+  </section>
+
+  <section class="slide">
+    <div class="num r" style="--d:.05s">AGENDA</div>
+    <h2 class="r" style="--d:.12s">Three things today.</h2>
+    <div class="agenda r" style="--d:.22s">
+      <div class="glass agitem"><span class="an">01</span><div><div class="at">As-Is Flow</div><div class="as">How it works today, manually</div></div></div>
+      <div class="glass agitem"><span class="an">02</span><div><div class="at">Personas</div><div class="as">Who's involved in a work trip, end to end</div></div></div>
+      <div class="glass agitem"><span class="an">03</span><div><div class="at">Work Trip Breakdown</div><div class="as">A. Nomination &middot; B. Quotation &middot; C. Travel Approval Paper</div></div></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="num r" style="--d:.05s">01 &middot; AS-IS FLOW</div>
+    <h2 class="r" style="--d:.12s">The journey, today.</h2>
+    <div class="flowlist r" style="--d:.22s">
+      <div class="glass flowstep"><span class="sn">1</span><span class="st">LE obtains nomination approval <i>— not yet discovered</i></span></div>
+      <div class="glass flowstep"><span class="sn">2</span><span class="st">Funding type is determined — fully AGC, co-funded, or fully external</span></div>
+      <div class="glass flowstep"><span class="sn">3</span><span class="st">LE gets an FCM quote — for all items, or only those AGC manages</span></div>
+      <div class="glass flowstep"><span class="sn">4</span><span class="st">Officer accepts the quotation</span></div>
+      <div class="glass flowstep"><span class="sn">5</span><span class="st">Div FBP prepares and submits the Travel Approval Paper (TAP)</span></div>
+      <div class="glass flowstep"><span class="sn">6</span><span class="st">FCM performs soft booking, then hard booking once approved</span></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="num r" style="--d:.05s">02 &middot; PERSONAS</div>
+    <h2 class="r" style="--d:.12s">Who's in the loop.</h2>
+    <div class="roles r" style="--d:.22s" id="personaList"></div>
+  </section>
+
+  <section class="slide" id="flowSlide">
+    <div class="num amber r" style="--d:.05s">03 &middot; WORK TRIP BREAKDOWN</div>
+    <h2 class="r" style="--d:.12s">Work Trips.</h2>
+    <div class="cols r" style="--d:.26s">
+
+      <div class="glass col a" data-col="a">
+        <div class="chead"><span class="clabel">A</span><span class="ctitle">Nomination</span></div>
+        <div class="clist" id="colA"></div>
+      </div>
+
+      <div class="glass col b" data-col="b">
+        <div class="chead"><span class="clabel">B</span><span class="ctitle">Quotation</span></div>
+        <div class="clist" id="colB"></div>
+      </div>
+
+      <div class="glass col c" data-col="c">
+        <div class="chead"><span class="clabel">C</span><span class="ctitle">Travel Approval Paper</span></div>
+        <div class="clist" id="colC"></div>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<div class="detail" id="fdetail" aria-hidden="true">
+  <div class="scrim" id="scrim"></div>
+  <div class="glass panel">
+    <div class="dphase" id="fdphase"></div>
+    <div class="dtitle" id="fdtitle"></div>
+    <div class="dkeys" id="fdkeys"></div>
+    <div class="daside" id="fdaside" hidden>
+      <div class="dat" id="fdatxt"></div>
+      <div id="fdalist"></div>
+    </div>
+    <button class="dback" id="fback">Close</button>
+  </div>
+</div>
+
+<div class="detail" id="personaModal" aria-hidden="true">
+  <div class="scrim" id="pmScrim"></div>
+  <div class="glass panel">
+    <div class="dphase" id="pmHeading">Persona</div>
+    <div class="ffield">
+      <label for="pmName">Name</label>
+      <input type="text" id="pmName" placeholder="e.g. LE" />
+    </div>
+    <div class="ffield">
+      <label for="pmRole">Role</label>
+      <input type="text" id="pmRole" placeholder="e.g. Submits the request" />
+    </div>
+    <div class="factions">
+      <button class="fbtn primary" id="pmSave">Save</button>
+      <button class="fbtn danger" id="pmDelete">Delete</button>
+      <button class="fbtn" id="pmCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="detail" id="nodeEditModal" aria-hidden="true">
+  <div class="scrim" id="neScrim"></div>
+  <div class="glass panel">
+    <div class="dphase" id="neHeading">Step</div>
+    <div class="ffield">
+      <label for="neTitle">Title</label>
+      <input type="text" id="neTitle" placeholder="e.g. LE obtains nomination approval" />
+    </div>
+    <div class="ffield">
+      <label for="neKeys">Key steps (one per line)</label>
+      <textarea id="neKeys" placeholder="One key step per line"></textarea>
+    </div>
+    <div class="ffield">
+      <label for="neEdgeTitle">Considerations label</label>
+      <input type="text" id="neEdgeTitle" placeholder="Considerations" />
+    </div>
+    <div class="ffield">
+      <label for="neEdgeCases">Considerations (one per line)</label>
+      <textarea id="neEdgeCases" placeholder="One consideration per line"></textarea>
+    </div>
+    <div class="factions">
+      <button class="fbtn primary" id="neSave">Save</button>
+      <button class="fbtn danger" id="neDelete">Delete</button>
+      <button class="fbtn" id="neCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<button class="navbtn" id="prev" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+<button class="navbtn" id="next" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+<div class="dots" id="dots"></div>
+<div class="hint r" id="hint" style="--d:.4s">Use <kbd>&larr;</kbd> <kbd>&rarr;</kbd> or swipe &middot; click a step for detail</div>
+
+<script>
+(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  const bar=document.getElementById('bar');
+  const dotsWrap=document.getElementById('dots');
+  const prev=document.getElementById('prev'), next=document.getElementById('next');
+  const mq=matchMedia('(max-width:640px)');
+  let i=0, detailOpen=false;
+
+  slides.forEach((_,n)=>{
+    const b=document.createElement('button');
+    b.setAttribute('aria-label','Slide '+(n+1));
+    b.addEventListener('click',()=>{if(!mq.matches)go(n);});
+    dotsWrap.appendChild(b);
+  });
+  const dots=[...dotsWrap.children];
+
+  function go(n){
+    if(detailOpen)closeDetail();
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+    dots.forEach((d,k)=>d.classList.toggle('on',k===i));
+    bar.style.width=((i)/(slides.length-1)*100)+'%';
+    prev.disabled=i===0; next.disabled=i===slides.length-1;
+  }
+  const nextFn=()=>go(i+1), prevFn=()=>go(i-1);
+  next.addEventListener('click',()=>{if(!mq.matches)nextFn();});
+  prev.addEventListener('click',()=>{if(!mq.matches)prevFn();});
+
+  const fdetail=document.getElementById('fdetail');
+  const fdphase=document.getElementById('fdphase');
+  const fdtitle=document.getElementById('fdtitle');
+  const fdkeys=document.getElementById('fdkeys');
+  const fdaside=document.getElementById('fdaside');
+  const fdatxt=document.getElementById('fdatxt');
+  const fdalist=document.getElementById('fdalist');
+  const fback=document.getElementById('fback');
+  const scrim=document.getElementById('scrim');
+
+  function openDetail(a){
+    if(!a)return;
+    fdphase.textContent=a.phase;
+    fdtitle.textContent=a.title;
+    fdkeys.textContent='';
+    a.keys.forEach((k,idx)=>{
+      const row=document.createElement('div'); row.className='dkey';
+      const n=document.createElement('span'); n.className='kn'; n.textContent=idx+1;
+      const t=document.createElement('span'); t.textContent=k;
+      row.append(n,t); fdkeys.appendChild(row);
+    });
+    fdalist.textContent='';
+    if(a.edgeCases && a.edgeCases.length){
+      fdatxt.textContent=a.edgeTitle||'Considerations';
+      a.edgeCases.forEach(ec=>{
+        const row=document.createElement('div'); row.className='daitem';
+        const ic=document.createElement('span'); ic.className='dic'; ic.textContent='!';
+        const t=document.createElement('span'); t.textContent=ec;
+        row.append(ic,t); fdalist.appendChild(row);
+      });
+      fdaside.hidden=false;
+    } else { fdaside.hidden=true; }
+    detailOpen=true;
+    fdetail.setAttribute('aria-hidden','false');
+    fback.focus();
+  }
+  function closeDetail(){
+    if(!detailOpen)return;
+    detailOpen=false;
+    fdetail.setAttribute('aria-hidden','true');
+  }
+  window.__openStepDetail=openDetail;
+  window.__isStepDetailOpen=()=>detailOpen;
+  fback.addEventListener('click',closeDetail);
+  scrim.addEventListener('click',closeDetail);
+
+  window.addEventListener('keydown',e=>{
+    if(detailOpen){
+      if(e.key==='Escape'){e.preventDefault();closeDetail();}
+      else if(e.key.indexOf('Arrow')===0||e.key===' '){e.preventDefault();}
+      return;
+    }
+    if(mq.matches)return;
+    if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)){e.preventDefault();nextFn();}
+    else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){e.preventDefault();prevFn();}
+    else if(e.key==='Home')go(0); else if(e.key==='End')go(slides.length-1);
+  });
+
+  let x0=null;
+  const deck=document.getElementById('deck');
+  deck.addEventListener('touchstart',e=>{ if(mq.matches||detailOpen)return; x0=e.touches[0].clientX; },{passive:true});
+  deck.addEventListener('touchend',e=>{
+    if(mq.matches||detailOpen||x0===null)return;
+    const dx=e.changedTouches[0].clientX-x0;
+    if(Math.abs(dx)>50){ dx<0?nextFn():prevFn(); }
+    x0=null;
+  },{passive:true});
+
+  go(0);
+})();
+
+// --- Editable personas: add / edit / delete, persisted in this browser ---
+(function(){
+  const KEY="agc-r3-personas";
+  const DEFAULTS=[
+    {name:"LE", role:"Submits the request"},
+    {name:"Officer", role:"Confirms quote, comments on TAP"},
+    {name:"FCM Travel", role:"Quotes, soft & hard booking"},
+    {name:"Div FBP", role:"Prepares / reviews the TAP"},
+    {name:"FBP Travel", role:"Cross-agency budget, visas"},
+    {name:"HOD(s)", role:"Nomination & budget support"},
+    {name:"SG", role:"Final approval"},
+    {name:"SCD", role:"CSD-linked, VVIP/int'l relations trips", highlight:true}
+  ];
+
+  const list=document.getElementById('personaList');
+  const modal=document.getElementById('personaModal');
+  const scrim=document.getElementById('pmScrim');
+  const heading=document.getElementById('pmHeading');
+  const nameInput=document.getElementById('pmName');
+  const roleInput=document.getElementById('pmRole');
+  const saveBtn=document.getElementById('pmSave');
+  const deleteBtn=document.getElementById('pmDelete');
+  const cancelBtn=document.getElementById('pmCancel');
+  let personaModalOpen=false;
+  let editingIndex=-1; // -1 means "new"
+
+  function load(){
+    try{
+      const raw=localStorage.getItem(KEY);
+      if(!raw)return DEFAULTS.slice();
+      const parsed=JSON.parse(raw);
+      return Array.isArray(parsed)?parsed:DEFAULTS.slice();
+    }catch(e){ return DEFAULTS.slice(); }
+  }
+  function save(personas){
+    try{ localStorage.setItem(KEY, JSON.stringify(personas)); }catch(e){}
+  }
+
+  function render(){
+    const personas=load();
+    list.innerHTML='';
+    personas.forEach((p,idx)=>{
+      const chip=document.createElement('div');
+      chip.className='glass rolechip';
+      if(p.highlight) chip.style.borderColor='rgba(255,194,102,.32)';
+      const rn=document.createElement('div'); rn.className='rn'; rn.textContent=p.name;
+      const rr=document.createElement('div'); rr.className='rr'; rr.textContent=p.role;
+      const edit=document.createElement('button');
+      edit.className='rc-edit'; edit.setAttribute('aria-label','Edit '+p.name); edit.textContent='✎';
+      edit.addEventListener('click', ev=>{ ev.stopPropagation(); openModal(idx); });
+      chip.append(rn,rr,edit);
+      list.appendChild(chip);
+    });
+    const addChip=document.createElement('button');
+    addChip.className='glass rolechip addchip';
+    addChip.innerHTML='<span class="plus">+</span><span class="rr">Add persona</span>';
+    addChip.addEventListener('click', ()=>openModal(-1));
+    list.appendChild(addChip);
+  }
+
+  function openModal(idx){
+    editingIndex=idx;
+    const personas=load();
+    if(idx>=0){
+      heading.textContent='Edit persona';
+      nameInput.value=personas[idx].name;
+      roleInput.value=personas[idx].role;
+      deleteBtn.hidden=false;
+    }else{
+      heading.textContent='New persona';
+      nameInput.value=''; roleInput.value='';
+      deleteBtn.hidden=true;
+    }
+    personaModalOpen=true;
+    modal.setAttribute('aria-hidden','false');
+    nameInput.focus();
+  }
+  function closeModal(){
+    personaModalOpen=false;
+    modal.setAttribute('aria-hidden','true');
+  }
+  saveBtn.addEventListener('click', ()=>{
+    const name=nameInput.value.trim(), role=roleInput.value.trim();
+    if(!name)return;
+    const personas=load();
+    if(editingIndex>=0){ personas[editingIndex]={...personas[editingIndex], name, role}; }
+    else{ personas.push({name, role}); }
+    save(personas); render(); closeModal();
+  });
+  deleteBtn.addEventListener('click', ()=>{
+    if(editingIndex<0)return;
+    const personas=load();
+    personas.splice(editingIndex,1);
+    save(personas); render(); closeModal();
+  });
+  cancelBtn.addEventListener('click', closeModal);
+  scrim.addEventListener('click', closeModal);
+
+  // isolate from the slide deck's own keyboard/touch nav while this modal is open
+  window.addEventListener('keydown', e=>{
+    if(!personaModalOpen)return;
+    if(e.key==='Escape'){ e.preventDefault(); closeModal(); }
+    else if(e.key.indexOf('Arrow')===0 || e.key===' '){
+      if(document.activeElement!==nameInput && document.activeElement!==roleInput){ e.preventDefault(); }
+    }
+    e.stopPropagation();
+  }, true);
+  const deckEl=document.getElementById('deck');
+  deckEl.addEventListener('touchstart', e=>{ if(personaModalOpen) e.stopPropagation(); }, true);
+  deckEl.addEventListener('touchend', e=>{ if(personaModalOpen) e.stopPropagation(); }, true);
+
+  render();
+})();
+
+// --- Editable Work Trip breakdown: add / edit / delete steps per column ---
+(function(){
+  const COLS=["a","b","c"];
+  const META={
+    a:{letter:"A", name:"Nomination"},
+    b:{letter:"B", name:"Quotation"},
+    c:{letter:"C", name:"Travel Approval Paper"}
+  };
+  const DEFAULTS={
+    a:[
+      {title:"LE obtains nomination approval",
+       keys:["LE submits the work trip request on behalf of the officer.","No academic/course approval chain like Study Trips — this is a work-purpose decision, not a training decision."],
+       edgeTitle:"Open questions",
+       edgeCases:["Exact approval mechanic marked “not yet discovered” as of the Feb 2026 deck.","If the trip supports international-relations/VVIP work (“the Gs”), it's a CSD officer from SCD, not LE.","FBP flagged that nomination approval authority may actually sit with SG, not a lower HOD tier — needs clarifying."]}
+    ],
+    b:[
+      {title:"Funding type determined",
+       keys:["Fully Funded by AGC — FCM quote required for all relevant items.","Co-Funded — AGC covers ODA/misc only; FCM quote needed just for AGC-managed items.","Fully Funded by External — external agency pays ODA and misc too."],
+       edgeTitle:"Considerations",
+       edgeCases:["Funding type and “which items need a quote” are independent variables — specific combinations decide what's needed.","Per-line Sponsored/Remaining split (Airfare, Accommodation) captured as $ or %."]},
+      {title:"FCM provides quote",
+       keys:["LE requests a quote from FCM for relevant trip items — flight, accommodation, visa, local transport, airport transfer.","Officer accepts the quotation."],
+       edgeTitle:"Considerations",
+       edgeCases:["If externally funded, the officer sends the external Budget Paper to Div FBP by email instead.","FBP wants a proper ServiceNow form here, not an email-based flow."]}
+    ],
+    c:[
+      {title:"Div FBP prepares & submits TAP",
+       keys:["TAP captures the cost breakdown, cost centre, and account code.","Officer comments on the TAP before it's submitted for approval."],
+       edgeTitle:"Open questions",
+       edgeCases:["FBP flagged a missing FBP Reviewer review step — not currently shown in the flow.","“Budget Table” (cost breakdown) and “Budget Paper” (programme details) are different documents — don't conflate them."]},
+      {title:"Approval routing",
+       keys:["Single division — one HOD supports both nomination and budget.","Multi-division — each division's HOD supports their own staff, in parallel.","Cross-funded — the attendee's HOD supports nomination; the funding division's HOD (cost-centre owner) supports the budget, separately."],
+       edgeTitle:"Considerations",
+       edgeCases:["This is dynamic, data-driven routing — not a fixed chain like R2's ED → SG.","Final approval sits with SG."]},
+      {title:"Soft booking → Hard booking",
+       keys:["FCM performs soft booking once the TAP is approved.","Hard booking — tickets and hotel vouchers — issued after."],
+       edgeCases:[]}
+    ]
+  };
+
+  const listEl={a:document.getElementById('colA'), b:document.getElementById('colB'), c:document.getElementById('colC')};
+  const modal=document.getElementById('nodeEditModal');
+  const neScrim=document.getElementById('neScrim');
+  const neHeading=document.getElementById('neHeading');
+  const neTitle=document.getElementById('neTitle');
+  const neKeys=document.getElementById('neKeys');
+  const neEdgeTitle=document.getElementById('neEdgeTitle');
+  const neEdgeCases=document.getElementById('neEdgeCases');
+  const neSave=document.getElementById('neSave');
+  const neDelete=document.getElementById('neDelete');
+  const neCancel=document.getElementById('neCancel');
+  let nodeModalOpen=false;
+  let editingCol=null, editingIdx=-1;
+
+  function keyFor(col){ return "agc-r3-flow-"+col; }
+  function load(col){
+    try{
+      const raw=localStorage.getItem(keyFor(col));
+      if(!raw)return DEFAULTS[col].slice();
+      const parsed=JSON.parse(raw);
+      return Array.isArray(parsed)?parsed:DEFAULTS[col].slice();
+    }catch(e){ return DEFAULTS[col].slice(); }
+  }
+  function save(col, steps){
+    try{ localStorage.setItem(keyFor(col), JSON.stringify(steps)); }catch(e){}
+  }
+
+  function renderCol(col){
+    const steps=load(col);
+    const container=listEl[col];
+    container.innerHTML='';
+    steps.forEach((step,idx)=>{
+      const code=META[col].letter+(idx+1);
+      const node=document.createElement('div');
+      node.className='node';
+      node.tabIndex=0;
+      node.setAttribute('role','button');
+
+      const go=document.createElement('span'); go.className='go'; go.innerHTML='&rsaquo;';
+      const nrow=document.createElement('div'); nrow.className='nrow';
+      const nk=document.createElement('span'); nk.className='nk'; nk.textContent=code;
+      const nt=document.createElement('span'); nt.className='nt'; nt.textContent=step.title;
+      nrow.append(nk,nt);
+
+      const edit=document.createElement('button');
+      edit.className='ne-edit'; edit.setAttribute('aria-label','Edit '+code); edit.textContent='✎';
+      edit.addEventListener('click', ev=>{ ev.stopPropagation(); openNodeModal(col, idx); });
+
+      node.append(go, nrow, edit);
+      const openView=()=>{
+        window.__openStepDetail && window.__openStepDetail({
+          phase: META[col].letter+' · '+META[col].name,
+          title: step.title,
+          keys: step.keys||[],
+          edgeTitle: step.edgeTitle,
+          edgeCases: step.edgeCases||[]
+        });
+      };
+      node.addEventListener('click', openView);
+      node.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openView(); } });
+
+      container.appendChild(node);
+    });
+
+    const addBtn=document.createElement('button');
+    addBtn.className='addnode';
+    addBtn.textContent='+ Add step';
+    addBtn.addEventListener('click', ()=>openNodeModal(col, -1));
+    container.appendChild(addBtn);
+  }
+  function renderAll(){ COLS.forEach(renderCol); }
+
+  function openNodeModal(col, idx){
+    editingCol=col; editingIdx=idx;
+    if(idx>=0){
+      const steps=load(col);
+      const step=steps[idx];
+      neHeading.textContent='Edit '+META[col].letter+(idx+1);
+      neTitle.value=step.title||'';
+      neKeys.value=(step.keys||[]).join('\n');
+      neEdgeTitle.value=step.edgeTitle||'';
+      neEdgeCases.value=(step.edgeCases||[]).join('\n');
+      neDelete.hidden=false;
+    }else{
+      neHeading.textContent='New step · '+META[col].letter+' '+META[col].name;
+      neTitle.value=''; neKeys.value=''; neEdgeTitle.value=''; neEdgeCases.value='';
+      neDelete.hidden=true;
+    }
+    nodeModalOpen=true;
+    modal.setAttribute('aria-hidden','false');
+    neTitle.focus();
+  }
+  function closeNodeModal(){
+    nodeModalOpen=false;
+    modal.setAttribute('aria-hidden','true');
+  }
+  function linesOf(ta){
+    return ta.value.split('\n').map(s=>s.trim()).filter(s=>s.length>0);
+  }
+  neSave.addEventListener('click', ()=>{
+    const title=neTitle.value.trim();
+    if(!title || !editingCol)return;
+    const steps=load(editingCol);
+    const data={ title, keys:linesOf(neKeys), edgeTitle:neEdgeTitle.value.trim(), edgeCases:linesOf(neEdgeCases) };
+    if(editingIdx>=0){ steps[editingIdx]=data; } else { steps.push(data); }
+    save(editingCol, steps);
+    renderCol(editingCol);
+    closeNodeModal();
+  });
+  neDelete.addEventListener('click', ()=>{
+    if(!editingCol || editingIdx<0)return;
+    const steps=load(editingCol);
+    steps.splice(editingIdx,1);
+    save(editingCol, steps);
+    renderCol(editingCol);
+    closeNodeModal();
+  });
+  neCancel.addEventListener('click', closeNodeModal);
+  neScrim.addEventListener('click', closeNodeModal);
+
+  // isolate from the slide deck's own keyboard/touch nav while this modal is open
+  window.addEventListener('keydown', e=>{
+    if(!nodeModalOpen)return;
+    if(e.key==='Escape'){ e.preventDefault(); closeNodeModal(); }
+    else if(e.key.indexOf('Arrow')===0 || e.key===' '){
+      // allow normal typing/navigation inside text fields, just block the slide-deck shortcuts
+      if(document.activeElement!==neTitle && document.activeElement!==neKeys && document.activeElement!==neEdgeTitle && document.activeElement!==neEdgeCases){
+        e.preventDefault();
+      }
+    }
+    e.stopPropagation();
+  }, true);
+  const deckEl2=document.getElementById('deck');
+  deckEl2.addEventListener('touchstart', e=>{ if(nodeModalOpen) e.stopPropagation(); }, true);
+  deckEl2.addEventListener('touchend', e=>{ if(nodeModalOpen) e.stopPropagation(); }, true);
+
+  renderAll();
+})();
+</script>
+</body>
+</html>
