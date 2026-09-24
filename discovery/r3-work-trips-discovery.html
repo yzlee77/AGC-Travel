@@ -578,14 +578,22 @@
        edgeCases:["What are the details needed? Nature of trip, trip type, nominees, etc.","Who are the roles that will raise this request?","When is the latest a travel request should be raised?","Is an approval route needed here?","Will the user raising this request know if the trip is fully funded, co-funded, or externally funded?","What are the special types of trips we need to be aware of — e.g. UNCITRAL, PSI?","Who needs to be kept informed at this stage — what notifications should be sent out, and to whom?"]}
     ],
     b:[
-      {title:"Funding type determined",
-       keys:["Fully Funded by AGC — FCM quote required for all relevant items.","Co-Funded — AGC covers ODA/misc only; FCM quote needed just for AGC-managed items.","Fully Funded by External — external agency pays ODA and misc too."],
+      {title:"LE/LO/SCD requests a quotation from FCM",
+       keys:["LE/LO/SCD sends FCM the trip and traveller details to request quotations for the relevant items — flight, accommodation, visa, local transport, airport transfer."],
        edgeTitle:"Considerations",
-       edgeCases:["Funding type and “which items need a quote” are independent variables — specific combinations decide what's needed.","Per-line Sponsored/Remaining split (Airfare, Accommodation) captured as $ or %."]},
-      {title:"FCM provides quote",
-       keys:["LE requests a quote from FCM for relevant trip items — flight, accommodation, visa, local transport, airport transfer.","Officer accepts the quotation."],
+       edgeCases:["Funding type — Fully Funded, Co-Funded, or Fully Funded by External — determines which items actually need an FCM quote. E.g. Co-Funded only needs a quote for the items AGC manages; External means the external agency covers ODA/misc too.","A per-line Sponsored/Remaining split (e.g. Airfare, Accommodation) may need to be captured as $ or %."]},
+      {title:"FCM sends the quotation",
+       keys:["FCM replies with quotation options covering the items requested."],
+       edgeTitle:"Open questions",
+       edgeCases:["Does FCM reply through the same email/Excel exchange used for R2, or a different mechanism for work trips?","What's the expected turnaround time for FCM to return a quotation?"]},
+      {title:"Officer selects from the quotation",
+       keys:["The officer reviews the quotation FCM has sent and selects their preferred options."],
        edgeTitle:"Considerations",
-       edgeCases:["If externally funded, the officer sends the external Budget Paper to Div FBP by email instead.","FBP wants a proper ServiceNow form here, not an email-based flow."]}
+       edgeCases:["If externally funded, the officer may send the external Budget Paper to Div FBP by email instead of selecting here — flagged for R2, still to confirm for work trips.","FBP wants a proper ServiceNow form for this step, not an email-based flow."]},
+      {title:"FBP reviews the selection",
+       keys:["Div FBP reviews the officer's selected quotation before it moves into Travel Approval Paper preparation — the FBP review checkpoint flagged as missing from the current flow."],
+       edgeTitle:"Open questions",
+       edgeCases:["What exactly does FBP check here — quotation accuracy, budget alignment, cost centre?","What happens if FBP doesn't approve the selection — sent back to the officer, or to LE/LO/SCD?"]}
     ],
     c:[
       {title:"Div FBP prepares & submits TAP",
