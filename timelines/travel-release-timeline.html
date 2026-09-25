@@ -264,7 +264,7 @@
 <section id="tabR3" hidden>
 
   <div class="r3-intro">
-    <b>Rough draft, not a commitment.</b> Work Trip discovery is happening progressively, sprint by sprint, not upfront — so this breakdown reflects current understanding and will change as discovery proceeds. Each sprint's content below is editable directly on this page.
+    <b>Tentative plan for R3.</b>
   </div>
 
   <div id="sprintCards"></div>
@@ -564,26 +564,22 @@
 (function(){
   var SPRINTS = [
     { id:17, dates:"19 Oct–1 Nov", risk:null,
-      def:["Core Work Trip request/creation flow (no nomination gate — straight to funding classification)",
-           "Funding classification logic: Fully Funded by AGC / Co-Funded / Fully Funded by External, plus per-line-item Sponsored vs. Remaining split ($ or %) — this determines which items need an FCM quote and whether external budget approval upload is required, so it has to exist before quotation or TAP work can start",
-           "Travel vs. Non-Travel classification",
-           "Basic approval routing (single-division case)",
-           "Discovery, front-loaded: SCD requirements, front-end nomination mechanics, PSI-specific requirements, UNCITRAL-specific requirements — builds happen later, requirements get nailed down now"] },
+      def:["Dev of Nomination approval workflow for Work Trips",
+           "Dev of trip type for UNCITRAL, PSI",
+           "Discovery of different workflows/work items for different funding types"] },
     { id:18, dates:"2–15 Nov", risk:"Reduced capacity — 1 dev on leave 4–17 Nov",
-      def:["FCM quotation reuse/config for Work Trip (genuinely low-risk — quotation mechanism itself is unchanged)",
-           "Budget approval upload for co-funded trips",
-           "Continue discovery/analysis (SCD, PSI, UNCITRAL) — light enough for reduced capacity"] },
+      def:["Dev of FCM quotation for Work Trips",
+           "Dev of FBP review step",
+           "Discovery of UNCITRAL/PSI workflow requirements — informs Sprint 19 dev"] },
     { id:19, dates:"16–29 Nov", risk:null,
-      def:["PSI Estimated Cost Breakdown form (calculated fields — highest complexity item)",
-           "Auto-generated email for cost breakdown",
-           "Uses discovery findings from Sprint 17–18"] },
+      def:["Dev of workflow for special trip types such as UNCITRAL, PSI",
+           "Discovery of TAP and soft booking requirements — informs Sprint 20 dev"] },
     { id:20, dates:"30 Nov–13 Dec", risk:null,
-      def:["Multi-HOD dynamic approval routing — real conditional logic based on attendee-division vs. funding-division data, not a config reuse",
-           "SCD-specific implementation, informed by Sprint 17 discovery"] },
+      def:["Dev of Travel Approval Paper (TAP)",
+           "Dev of soft booking",
+           "Discovery of hard booking requirements — informs Sprint 21 dev"] },
     { id:21, dates:"14–27 Dec", risk:"Spans the Dec holiday period — reduced capacity likely",
-      def:["UNCITRAL Note Verbale flow, built using Sprint 17 discovery findings",
-           "End-to-end integration testing (soft/hard booking for work trips)",
-           "Buffer for spillover"] },
+      def:["Dev of hard booking"] },
     { id:22, dates:"28 Dec–10 Jan", risk:null,
       def:["UAT"] }
   ];
