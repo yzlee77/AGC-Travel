@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#000000" />
-<title>R3 Discovery · AGC Travel</title>
+<title>R3 Discovery Recap</title>
 <style>
   :root{
     --blue:#5e9eff; --blue-2:#8ab4ff;
@@ -68,18 +68,7 @@
   .agitem .at{font-size:clamp(16px,1.9vw,20px);font-weight:650}
   .agitem .as{font-size:12.5px;color:var(--ink-faint);margin-top:2px}
 
-  /* personas */
-  .roles{display:flex;flex-wrap:wrap;gap:clamp(10px,1.4vw,14px);justify-content:center;margin-top:40px;max-width:1020px}
-  .rolechip{position:relative;padding:16px 20px;min-width:150px;text-align:center;display:flex;flex-direction:column;gap:5px;align-items:center}
-  .rolechip .rn{font-size:clamp(14px,1.5vw,16px);font-weight:650}
-  .rolechip .rr{font-size:11.5px;color:var(--ink-soft);line-height:1.35;max-width:20ch}
-  .rc-edit{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.08);border:none;color:var(--ink-faint);display:grid;place-items:center;cursor:pointer;font-size:12px;opacity:.75;transition:opacity .15s,background .15s}
-  .rc-edit:hover{opacity:1;background:rgba(255,255,255,.16);color:var(--ink)}
-  .addchip{border-style:dashed;background:transparent;cursor:pointer;color:var(--ink-faint);font-family:inherit;justify-content:center}
-  .addchip:hover{color:var(--ink);border-color:var(--ink-soft)}
-  .addchip .plus{font-size:24px;line-height:1}
-
-  /* edit form (shared by persona modal) */
+  /* edit form (shared) */
   .ffield{margin-top:16px;text-align:left}
   .ffield label{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px}
   .ffield input{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:var(--ink);font-family:inherit;font-size:14.5px}
@@ -95,15 +84,7 @@
   .fbtn.danger:hover{background:rgba(255,107,107,.12)}
 
   /* as-is flow */
-  .flowrow{display:flex;align-items:center;justify-content:center;gap:36px;flex-wrap:wrap;margin-top:38px;width:100%}
-  .flowlist{display:flex;flex-direction:column;gap:11px;max-width:600px;width:100%;text-align:left}
-  .flowstep{display:flex;gap:16px;align-items:flex-start;padding:16px 20px}
-  .flowstep .sn{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:rgba(94,158,255,.14);color:var(--blue);font-weight:700;font-size:15px}
-  .flowstep .st{font-size:clamp(14.5px,1.6vw,16.5px);color:var(--ink);line-height:1.4;text-align:left}
-  .flowstep .st i{color:var(--ink-faint);font-style:normal}
-  .imgtoggle{display:inline-flex;flex:none;flex-direction:column;align-items:center;gap:10px;margin:0;padding:22px 26px;border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.05);color:var(--ink-soft);cursor:pointer;font-family:inherit;font-size:13.5px;font-weight:600;text-align:center;max-width:180px;transition:background .15s,color .15s,border-color .15s}
-  .imgtoggle:hover{background:rgba(255,255,255,.1);color:var(--ink);border-color:var(--ink-soft)}
-  .imgtoggle svg{width:26px;height:26px;stroke:currentColor;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+  .asisimg{display:block;max-width:min(880px,88vw);max-height:62vh;width:auto;height:auto;margin-top:38px;border-radius:16px;border:1px solid var(--line);box-shadow:0 20px 60px rgba(0,0,0,.35);cursor:zoom-in}
 
   .lightbox{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:clamp(16px,4vw,48px);opacity:0;pointer-events:none;transition:opacity .3s var(--ease)}
   .lightbox[aria-hidden="false"]{opacity:1;pointer-events:auto}
@@ -137,14 +118,23 @@
   .addnode{background:transparent;border:1px dashed var(--line);border-radius:14px;padding:13px 16px;text-align:center;cursor:pointer;color:var(--ink-faint);font-family:inherit;font-size:13px;width:100%;transition:color .15s,border-color .15s}
   .addnode:hover{color:var(--ink);border-color:var(--ink-soft)}
 
-  /* study vs work trip nomination comparison */
-  .cmpwrap{display:flex;align-items:flex-start;justify-content:center;gap:clamp(20px,4vw,56px);margin-top:34px;max-width:820px;width:100%;flex-wrap:wrap}
-  .cmpcol{flex:1 1 260px;max-width:320px;display:flex;flex-direction:column;align-items:center}
-  .cmphead{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-bottom:18px;padding:6px 16px;border-radius:999px}
-  .cmphead.study{color:var(--ink-soft);background:rgba(255,255,255,.06);border:1px solid var(--line)}
-  .cmphead.work{color:var(--amber);background:rgba(245,166,35,.12);border:1px solid rgba(255,194,102,.32)}
-  .cmpstep{width:100%;padding:14px 16px;text-align:left;font-size:13.5px;line-height:1.42;color:var(--ink)}
-  .cmparrow{color:var(--ink-faint);font-size:17px;line-height:1;margin-block:6px}
+  /* funding-type decision matrices */
+  .decwrap{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;margin-top:30px;max-width:1080px;width:100%;align-items:flex-start}
+  .deccol{flex:1 1 380px;max-width:500px;display:flex;flex-direction:column;text-align:left}
+  .dectoggle{display:flex;align-items:center;gap:12px;width:100%;padding:16px 20px;border:none;cursor:pointer;font-family:inherit;text-align:left;color:var(--ink)}
+  .dectoggle .chev{flex:none;width:9px;height:9px;border-right:2px solid var(--ink-soft);border-bottom:2px solid var(--ink-soft);transform:rotate(-45deg);transition:transform .15s ease}
+  .deccol.open .dectoggle .chev{transform:rotate(45deg)}
+  .dechead{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--amber)}
+  .deccontent{padding:16px 4px 4px}
+  .decq{font-size:13.5px;color:var(--ink-soft);margin-bottom:12px;line-height:1.4}
+  .decbranch{display:flex;flex-direction:column;gap:9px;margin-bottom:14px}
+  .decstep{padding:12px 16px;font-size:13.5px;line-height:1.42;color:var(--ink)}
+  .decyn{display:block;font-size:10.5px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+  .notesarea{width:100%;min-height:150px;resize:vertical;font-family:inherit;font-size:12.5px;line-height:1.6;color:var(--ink);background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .notesarea:focus{outline:none;border-color:var(--blue)}
+  .impactcard{max-width:1080px;width:100%;margin-top:20px;padding:22px 26px;text-align:left}
+  .slideactions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:22px}
+  .slideactions .fbtn{font-size:13px}
 
   /* detail overlay */
   .detail{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .3s var(--ease)}
@@ -172,6 +162,17 @@
     .dots,.bar{display:none}
     body{overflow-y:auto}
   }
+
+  @media print{
+    .wash,.bar,.dots,.navbtn,.fsbtn,.hint,.slideactions{display:none!important}
+    body{background:#fff;color:#111;padding:0}
+    .deck{position:static;height:auto;overflow:visible}
+    .slide{display:none;position:static;opacity:1!important;transform:none!important;padding:24px;min-height:0}
+    .slide.active{display:flex}
+    .glass{background:#f4f4f4;box-shadow:none;backdrop-filter:none;border-color:#ccc}
+    .notesarea{background:#fff;border-color:#999;color:#111}
+    .asisimg{box-shadow:none;max-height:none}
+  }
 </style>
 </head>
 <body>
@@ -182,47 +183,100 @@
 <div class="deck" id="deck">
 
   <section class="slide">
-    <div class="eyebrow r" style="--d:.05s">AGC Travel &middot; R3 &middot; 24 September 2026</div>
+    <div class="eyebrow r" style="--d:.05s">AGC Travel &middot; R3 &middot; 28 September 2026</div>
     <h1 class="r" style="--d:.12s">Work Trips.</h1>
   </section>
 
   <section class="slide">
     <div class="num r" style="--d:.05s">AGENDA</div>
-    <h2 class="r" style="--d:.12s">Three things today.</h2>
+    <h2 class="r" style="--d:.12s">Two things today.</h2>
     <div class="agenda r" style="--d:.22s">
-      <div class="glass agitem"><span class="an">01</span><div><div class="at">As-Is Flow</div><div class="as">How it works today, manually</div></div></div>
-      <div class="glass agitem"><span class="an">02</span><div><div class="at">Personas</div><div class="as">Who's involved in a work trip, end to end</div></div></div>
-      <div class="glass agitem"><span class="an">03</span><div><div class="at">Work Trip Breakdown</div><div class="as">A. Nomination &middot; B. Quotation &middot; C. Travel Approval Paper</div></div></div>
+      <div class="glass agitem"><span class="an">01</span><div><div class="at">Funding Types</div><div class="as">Discover the workflow for different funding types, with FBP</div></div></div>
+      <div class="glass agitem"><span class="an">02</span><div><div class="at">Nomination Approval</div><div class="as">Discover the nomination approval workflow for work trips</div></div></div>
     </div>
   </section>
 
   <section class="slide">
     <div class="num r" style="--d:.05s">01 &middot; AS-IS FLOW</div>
     <h2 class="r" style="--d:.12s">The journey, today.</h2>
-    <div class="flowrow">
-      <div class="flowlist r" style="--d:.22s">
-        <div class="glass flowstep"><span class="sn">1</span><span class="st">LE obtains nomination approval <i>— not yet discovered</i></span></div>
-        <div class="glass flowstep"><span class="sn">2</span><span class="st">Funding type is determined — fully AGC, co-funded, or fully external</span></div>
-        <div class="glass flowstep"><span class="sn">3</span><span class="st">LE gets an FCM quote — for all items, or only those AGC manages</span></div>
-        <div class="glass flowstep"><span class="sn">4</span><span class="st">Officer accepts the quotation</span></div>
-        <div class="glass flowstep"><span class="sn">5</span><span class="st">Div FBP prepares and submits the Travel Approval Paper (TAP)</span></div>
-        <div class="glass flowstep"><span class="sn">6</span><span class="st">FCM performs soft booking, then hard booking once approved</span></div>
+    <img class="asisimg r" id="flowImgBtn" style="--d:.22s" src="travel-as-is-flow.png" alt="As-Is process flow diagram" />
+  </section>
+
+  <section class="slide">
+    <div class="num amber r" style="--d:.05s">02 &middot; FUNDING TYPES &mdash; DEEP DIVE</div>
+    <h2 class="r" style="--d:.12s">Co-Funded &amp; Fully Funded by External.</h2>
+    <div class="decwrap r" style="--d:.22s">
+
+      <div class="deccol">
+        <button class="dectoggle glass" data-target="decCoFunded">
+          <span class="chev"></span>
+          <span class="dechead">Co-Funded by AGC</span>
+        </button>
+        <div class="deccontent" id="decCoFunded" hidden>
+          <div class="decq">Does AGC cover ODA/Misc expenses only?</div>
+          <div class="decbranch">
+            <div class="glass decstep"><span class="decyn">Yes</span>Officer sends external Budget Paper to Div FBP via Email</div>
+            <div class="glass decstep"><span class="decyn">No</span>LE gets FCM quote only for items managed and paid by AGC</div>
+          </div>
+          <textarea class="notesarea" id="notesCoFunded">1. Decision matrix &mdash; where AGC covers ODA/Misc expenses only
+2. Define trip items managed and/or paid by AGC
+3. Is the external Budget Paper handled offline? How does this affect TAP generation?
+4. What notifications need to be sent out?</textarea>
+        </div>
       </div>
-      <button class="imgtoggle r" id="flowImgBtn" style="--d:.3s">
-        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 15l5-5 4 4 4-4 5 5"/><circle cx="8" cy="9" r="1.4" fill="currentColor" stroke="none"/></svg>
-        View As-Is Process Flow diagram
-      </button>
+
+      <div class="deccol">
+        <button class="dectoggle glass" data-target="decExternal">
+          <span class="chev"></span>
+          <span class="dechead">Fully Funded by External</span>
+        </button>
+        <div class="deccontent" id="decExternal" hidden>
+          <div class="decq">Are trip items managed by AGC?</div>
+          <div class="decbranch">
+            <div class="glass decstep"><span class="decyn">Yes</span>LE gets FCM quote only for items managed by AGC &rarr; Div FBP provides Budget Table for officer &rarr; officer submits Budget Table to external agency</div>
+            <div class="glass decstep"><span class="decyn">No</span>Officer gets nomination approval and CCs Div FBP</div>
+          </div>
+          <textarea class="notesarea" id="notesExternal">1. Same &quot;managed by AGC&quot; question &mdash; known upfront by LEs / whoever raises the travel request?
+2. LE gets FCM quote &mdash; does FBP need to be in the loop?
+3. What are the details needed for this type of TAP?</textarea>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="glass impactcard r" style="--d:.32s">
+      <div class="dechead">Impact on TAP Generation</div>
+      <div class="decq">How do these decisions change what's captured in the TAP &mdash; fields, scope, approval routing?</div>
+      <textarea class="notesarea" id="notesTapImpact" placeholder="Notes on how these funding-type decisions cascade into TAP generation..."></textarea>
+    </div>
+
+    <div class="slideactions r" style="--d:.4s">
+      <button class="fbtn" onclick="window.print()">&#128424; Export as PDF</button>
+      <button class="fbtn" data-copy="notesCoFunded,notesExternal,notesTapImpact">&#128203; Copy notes</button>
     </div>
   </section>
 
   <section class="slide">
-    <div class="num r" style="--d:.05s">02 &middot; PERSONAS</div>
-    <h2 class="r" style="--d:.12s">Who's in the loop.</h2>
-    <div class="roles r" style="--d:.22s" id="personaList"></div>
+    <div class="num amber r" style="--d:.05s">03 &middot; NOMINATION APPROVAL &mdash; DEEP DIVE</div>
+    <h2 class="r" style="--d:.12s">Nomination Approval.</h2>
+    <p class="kick r" style="--d:.18s">LEs raise the nomination request on behalf of the officer going on a work trip.</p>
+    <div class="glass impactcard r" style="--d:.26s">
+      <div class="dechead">Open Questions</div>
+      <textarea class="notesarea" id="notesNomination" style="min-height:220px">1. What is the current process for nomination approval?
+2. Upon raising the nomination, do they know if the trip is fully funded by AGC, co-funded, or fully funded by external?
+3. What's the approval process for nomination &mdash; notifications, who needs to be in the loop?
+4. SLA and reminders?
+5. Trip types to account for: Conferences, UNCITRAL, PSI</textarea>
+    </div>
+
+    <div class="slideactions r" style="--d:.34s">
+      <button class="fbtn" onclick="window.print()">&#128424; Export as PDF</button>
+      <button class="fbtn" data-copy="notesNomination">&#128203; Copy notes</button>
+    </div>
   </section>
 
   <section class="slide" id="flowSlide">
-    <div class="num amber r" style="--d:.05s">03 &middot; WORK TRIP BREAKDOWN</div>
+    <div class="num amber r" style="--d:.05s">04 &middot; WORK TRIP BREAKDOWN</div>
     <h2 class="r" style="--d:.12s">Work Trips.</h2>
     <div class="cols r" style="--d:.26s">
 
@@ -239,33 +293,6 @@
       <div class="glass col c" data-col="c">
         <div class="chead"><span class="clabel">C</span><span class="ctitle">Travel Approval Paper</span></div>
         <div class="clist" id="colC"></div>
-      </div>
-
-    </div>
-  </section>
-
-  <section class="slide">
-    <div class="num amber r" style="--d:.05s">A &middot; NOMINATION &mdash; DEEP DIVE</div>
-    <h2 class="r" style="--d:.12s">Study Trip vs. Work Trip.</h2>
-    <p class="kick r" style="--d:.18s">Proposal: Work Trip skips the separate content-creation stage entirely — the travel request itself is the starting point.</p>
-    <div class="cmpwrap r" style="--d:.26s">
-
-      <div class="cmpcol">
-        <span class="cmphead study">Study Trip &middot; Current</span>
-        <div class="glass cmpstep">Course/content is created, nominees are added</div>
-        <div class="cmparrow">&darr;</div>
-        <div class="glass cmpstep">Sent to AG for approval</div>
-        <div class="cmparrow">&darr;</div>
-        <div class="glass cmpstep">CA raises the travel request</div>
-        <div class="cmparrow">&darr;</div>
-        <div class="glass cmpstep">Receives FCM quotation</div>
-      </div>
-
-      <div class="cmpcol">
-        <span class="cmphead work">Work Trip &middot; Proposed</span>
-        <div class="glass cmpstep" style="border-color:rgba(255,194,102,.28)">LE / LO / SCD creates the travel request directly &mdash; trip type, funding, dates captured upfront</div>
-        <div class="cmparrow">&darr;</div>
-        <div class="glass cmpstep" style="border-color:rgba(255,194,102,.28)">Receives FCM quotation</div>
       </div>
 
     </div>
@@ -291,26 +318,6 @@
   <div class="scrim" id="lbScrim"></div>
   <button class="lbclose" id="lbClose" aria-label="Close">&times;</button>
   <img src="travel-as-is-flow.png" alt="As Is Process Flow (Work Trips) diagram, enlarged" />
-</div>
-
-<div class="detail" id="personaModal" aria-hidden="true">
-  <div class="scrim" id="pmScrim"></div>
-  <div class="glass panel">
-    <div class="dphase" id="pmHeading">Persona</div>
-    <div class="ffield">
-      <label for="pmName">Name</label>
-      <input type="text" id="pmName" placeholder="e.g. LE" />
-    </div>
-    <div class="ffield">
-      <label for="pmRole">Role</label>
-      <input type="text" id="pmRole" placeholder="e.g. Submits the request" />
-    </div>
-    <div class="factions">
-      <button class="fbtn primary" id="pmSave">Save</button>
-      <button class="fbtn danger" id="pmDelete">Delete</button>
-      <button class="fbtn" id="pmCancel">Cancel</button>
-    </div>
-  </div>
 </div>
 
 <div class="detail" id="nodeEditModal" aria-hidden="true">
@@ -436,6 +443,8 @@
       else if(e.key.indexOf('Arrow')===0||e.key===' '){e.preventDefault();}
       return;
     }
+    const tag=document.activeElement&&document.activeElement.tagName;
+    if(tag==='TEXTAREA'||tag==='INPUT')return;
     if(mq.matches)return;
     if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)){e.preventDefault();nextFn();}
     else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){e.preventDefault();prevFn();}
@@ -455,118 +464,55 @@
   go(0);
 })();
 
-// --- Editable personas: add / edit / delete, persisted in this browser ---
+// --- Funding-type decision matrices: collapsible toggles ---
 (function(){
-  const KEY="agc-r3-personas";
-  const DEFAULTS=[
-    {name:"LE", role:"Submits the request"},
-    {name:"Officer", role:"Confirms quote, comments on TAP"},
-    {name:"FCM Travel", role:"Quotes, soft & hard booking"},
-    {name:"Div FBP", role:"Prepares / reviews the TAP"},
-    {name:"FBP Travel", role:"Cross-agency budget, visas"},
-    {name:"HOD(s)", role:"Nomination & budget support"},
-    {name:"SG", role:"Final approval"},
-    {name:"SCD", role:"CSD-linked, VVIP/int'l relations trips", highlight:true}
-  ];
-
-  const list=document.getElementById('personaList');
-  const modal=document.getElementById('personaModal');
-  const scrim=document.getElementById('pmScrim');
-  const heading=document.getElementById('pmHeading');
-  const nameInput=document.getElementById('pmName');
-  const roleInput=document.getElementById('pmRole');
-  const saveBtn=document.getElementById('pmSave');
-  const deleteBtn=document.getElementById('pmDelete');
-  const cancelBtn=document.getElementById('pmCancel');
-  let personaModalOpen=false;
-  let editingIndex=-1; // -1 means "new"
-
-  function load(){
-    try{
-      const raw=localStorage.getItem(KEY);
-      if(!raw)return DEFAULTS.slice();
-      const parsed=JSON.parse(raw);
-      return Array.isArray(parsed)?parsed:DEFAULTS.slice();
-    }catch(e){ return DEFAULTS.slice(); }
-  }
-  function save(personas){
-    try{ localStorage.setItem(KEY, JSON.stringify(personas)); }catch(e){}
-  }
-
-  function render(){
-    const personas=load();
-    list.innerHTML='';
-    personas.forEach((p,idx)=>{
-      const chip=document.createElement('div');
-      chip.className='glass rolechip';
-      if(p.highlight) chip.style.borderColor='rgba(255,194,102,.32)';
-      const rn=document.createElement('div'); rn.className='rn'; rn.textContent=p.name;
-      const rr=document.createElement('div'); rr.className='rr'; rr.textContent=p.role;
-      const edit=document.createElement('button');
-      edit.className='rc-edit'; edit.setAttribute('aria-label','Edit '+p.name); edit.textContent='✎';
-      edit.addEventListener('click', ev=>{ ev.stopPropagation(); openModal(idx); });
-      chip.append(rn,rr,edit);
-      list.appendChild(chip);
+  document.querySelectorAll('.dectoggle').forEach(btn=>{
+    const col=btn.closest('.deccol');
+    const content=document.getElementById(btn.dataset.target);
+    btn.addEventListener('click', ()=>{
+      const isOpen=col.classList.toggle('open');
+      content.hidden=!isOpen;
     });
-    const addChip=document.createElement('button');
-    addChip.className='glass rolechip addchip';
-    addChip.innerHTML='<span class="plus">+</span><span class="rr">Add persona</span>';
-    addChip.addEventListener('click', ()=>openModal(-1));
-    list.appendChild(addChip);
-  }
-
-  function openModal(idx){
-    editingIndex=idx;
-    const personas=load();
-    if(idx>=0){
-      heading.textContent='Edit persona';
-      nameInput.value=personas[idx].name;
-      roleInput.value=personas[idx].role;
-      deleteBtn.hidden=false;
-    }else{
-      heading.textContent='New persona';
-      nameInput.value=''; roleInput.value='';
-      deleteBtn.hidden=true;
-    }
-    personaModalOpen=true;
-    modal.setAttribute('aria-hidden','false');
-    nameInput.focus();
-  }
-  function closeModal(){
-    personaModalOpen=false;
-    modal.setAttribute('aria-hidden','true');
-  }
-  saveBtn.addEventListener('click', ()=>{
-    const name=nameInput.value.trim(), role=roleInput.value.trim();
-    if(!name)return;
-    const personas=load();
-    if(editingIndex>=0){ personas[editingIndex]={...personas[editingIndex], name, role}; }
-    else{ personas.push({name, role}); }
-    save(personas); render(); closeModal();
   });
-  deleteBtn.addEventListener('click', ()=>{
-    if(editingIndex<0)return;
-    const personas=load();
-    personas.splice(editingIndex,1);
-    save(personas); render(); closeModal();
+})();
+
+// --- Funding-type decision matrices: freeform notes, auto-saved per textarea ---
+(function(){
+  document.querySelectorAll('.notesarea').forEach(ta=>{
+    const key='agc-r3-notes-'+ta.id;
+    try{
+      const saved=localStorage.getItem(key);
+      if(saved!==null) ta.value=saved;
+    }catch(e){}
+    ta.addEventListener('input', ()=>{
+      try{ localStorage.setItem(key, ta.value); }catch(e){}
+    });
   });
-  cancelBtn.addEventListener('click', closeModal);
-  scrim.addEventListener('click', closeModal);
+})();
 
-  // isolate from the slide deck's own keyboard/touch nav while this modal is open
-  window.addEventListener('keydown', e=>{
-    if(!personaModalOpen)return;
-    if(e.key==='Escape'){ e.preventDefault(); closeModal(); }
-    else if(e.key.indexOf('Arrow')===0 || e.key===' '){
-      if(document.activeElement!==nameInput && document.activeElement!==roleInput){ e.preventDefault(); }
-    }
-    e.stopPropagation();
-  }, true);
-  const deckEl=document.getElementById('deck');
-  deckEl.addEventListener('touchstart', e=>{ if(personaModalOpen) e.stopPropagation(); }, true);
-  deckEl.addEventListener('touchend', e=>{ if(personaModalOpen) e.stopPropagation(); }, true);
-
-  render();
+// --- Copy notes to clipboard (paste into Word/email/etc.) ---
+(function(){
+  document.querySelectorAll('[data-copy]').forEach(btn=>{
+    const ids=btn.dataset.copy.split(',');
+    const orig=btn.textContent;
+    btn.addEventListener('click', ()=>{
+      const text=ids.map(id=>{
+        const el=document.getElementById(id);
+        return el?el.value:'';
+      }).filter(Boolean).join('\n\n---\n\n');
+      const done=()=>{ btn.textContent='Copied!'; setTimeout(()=>{ btn.textContent=orig; },1500); };
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(done).catch(done);
+      }else{
+        const ta=document.createElement('textarea');
+        ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+        document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); }catch(e){}
+        document.body.removeChild(ta);
+        done();
+      }
+    });
+  });
 })();
 
 // --- Editable Work Trip breakdown: add / edit / delete steps per column ---
