@@ -52,7 +52,6 @@
   .col-r1{flex-basis:110px;}
   .col-sprint{flex:14 1 0%;}
   .col-r3{flex:84 1 0%;}
-  .col-r4{flex-basis:130px;}
   .gap{flex:0 0 12px;}
 
   /* the bar */
@@ -78,7 +77,7 @@
   .cap-label .name{font-weight:700; font-size:.92rem;}
   .cap-label .meta{font-size:.78rem; color:var(--ink-soft); margin-block-start:2px;}
   .col-r1 .name{color:var(--done);}
-  .col-r4 .name, .col-r3 .name{color:var(--idle-text);}
+  .col-r3 .name{color:var(--idle-text);}
   .col-sprint .name{color:var(--accent);}
 
   .legend{display:flex; flex-wrap:wrap; gap:22px; margin-block-start:38px;}
@@ -187,30 +186,22 @@
   <div class="row marker-row">
     <div class="col col-r1"></div>
     <div class="gap"></div>
-    <div class="col col-sprint">
+    <div class="col col-sprint" style="flex:28 1 0%;">
       <div class="today">
         <span class="label">TODAY</span>
         <span class="tick"></span>
       </div>
     </div>
     <div class="gap"></div>
-    <div class="col col-sprint"></div>
-    <div class="gap"></div>
     <div class="col col-r3"></div>
-    <div class="gap"></div>
-    <div class="col col-r4"></div>
   </div>
 
   <div class="row">
     <div class="col col-r1"><div class="bar done"></div></div>
     <div class="gap"></div>
-    <div class="col col-sprint"><div class="bar current"></div></div>
-    <div class="gap"></div>
-    <div class="col col-sprint"><div class="bar current"></div></div>
+    <div class="col col-sprint" style="flex:28 1 0%;"><div class="bar current"></div></div>
     <div class="gap"></div>
     <div class="col col-r3"><div class="bar future"></div></div>
-    <div class="gap"></div>
-    <div class="col col-r4"><div class="bar future"></div></div>
   </div>
 
   <div class="row" style="margin-block-start:18px;">
@@ -218,20 +209,12 @@
       <div class="cap-label"><div class="name">R1</div><div class="meta">Live</div></div>
     </div>
     <div class="gap"></div>
-    <div class="col col-sprint">
-      <div class="cap-label"><div class="name">Sprint 15</div><div class="meta">21 Sep&ndash;4 Oct</div></div>
-    </div>
-    <div class="gap"></div>
-    <div class="col col-sprint">
-      <div class="cap-label"><div class="name">Sprint 16 &middot; UAT</div><div class="meta">5&ndash;18 Oct &rarr; Go-Live 19 Oct</div></div>
+    <div class="col col-sprint" style="flex:28 1 0%;">
+      <div class="cap-label"><div class="name">R2</div><div class="meta">Sprint 15&ndash;16 &middot; UAT &rarr; Go-Live 19 Oct</div></div>
     </div>
     <div class="gap"></div>
     <div class="col col-r3">
       <div class="cap-label"><div class="name">R3 &middot; Work Trips</div><div class="meta">~6 sprints &middot; est. Go-Live ~11 Jan 2027</div></div>
-    </div>
-    <div class="gap"></div>
-    <div class="col col-r4">
-      <div class="cap-label"><div class="name">R4</div><div class="meta">Dates TBD</div></div>
     </div>
   </div>
 
