@@ -629,7 +629,7 @@
     var card = document.createElement("div");
     card.className = "sprint-card";
 
-    var isCurrent = today >= new Date(sprint.start) && today <= new Date(sprint.end);
+    var isCurrent = today >= new Date(sprint.start+"T00:00:00") && today <= new Date(sprint.end+"T00:00:00");
     if (isCurrent) card.classList.add("current-sprint");
 
     var head = document.createElement("div");
